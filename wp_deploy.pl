@@ -213,28 +213,26 @@ sub set_ownership {
     if (my $group = $config->{group}) {
         my @cmd = ('find', $path);
 
-        # XXX: Don't reset permissions on wp-cache et al
+        # Don't reset permissions on wp-cache et al
         if (my $server_group = $config->{server_group}) {
             push @cmd, '-not', '-group', $server_group;
         }
 
+        push @cmd, '-exec';
         if (my $user = $config->{user}) {
-            if (my $host = $config->{host}) {
-                push @cmd, qw/-print0 | xargs -0/;
-                unshift @cmd, 'ssh', $host, '-l', $user;
-            }
-            else {
-                push @cmd, '-exec';
-            }
-
             push @cmd, 'chown', "$user:$group";
-
-            unless ($config->{host}) {
-                push @cmd, '{}', ';';
-            }
         }
         else {
-            push @cmd, '-exec', 'chgrp', $group, '{}', ';';
+            push @cmd, 'chgrp', $group;
+        }
+        push @cmd, '{}';
+
+        if (my $host = $config->{host} and my $user = $config->{user}) {
+            unshift @cmd, 'ssh', $host, '-l', $user;
+            push @cmd, '\;';
+        }
+        else {
+            push @cmd, ';';
         }
 
         system(@cmd);
