@@ -106,10 +106,6 @@ sub stage {
     for (@WordPress::Directories::PLUGIN) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
-        if (my $server_group = $config->{server_group}) {
-            system('chgrp', $server_group, $directory);
-            chmod 0771, $directory;
-        }
     }
 
     # Add wp-cache symbolic link
@@ -205,6 +201,13 @@ sub deploy {
 
     copy($stage_directory, $target, \@DEFAULT_RSYNC_ARGS);
     set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
+
+    if (my $server_group = $config->{server_group}) {
+        for (@WordPress::Directories::PLUGIN) {
+            my $directory = File::Spec->join($config->{path}, $WordPress::Directories::CONTENT, $_);
+            set_ownership($directory, $config->{user}, $server_group, $config->{host});
+        }
+    }
 }
 
 sub set_ownership {
