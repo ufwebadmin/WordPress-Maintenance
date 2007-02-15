@@ -2,9 +2,15 @@
 
 use strict;
 use warnings;
+use Carp;
+use Data::Dumper;
+use File::Find;
 use File::Spec;
 use File::Temp qw(tempdir);
+use FindBin;
 use Getopt::Long;
+use Template;
+use YAML ();
 
 
 ##
@@ -18,11 +24,11 @@ our @DEFAULT_RSYNC_ARGS = qw(
     --delete-after
 );
 our @DEFAULT_RSYNC_EXCLUDES = qw(
+    .svn/
     /license.txt
     /readme.html
     /wp-config-sample.php
 );
-our $DEFAULT_SHEBANG  = '#!/usr/local/bin/php';
 our @DEFAULT_EXECUTABLES = qw(
     index.php
     wp-atom.php
@@ -90,33 +96,31 @@ push @DEFAULT_EXECUTABLES, map { File::Spec->join('wp-admin', $_) } qw(
 
 main(@ARGV);
 sub main {
-    my ($source, $destination, $environment, $checkout, $shebang);
+    my $source_directory = File::Spec->curdir;
+    my $environment = 'dev';
+    my $template_directory = File::Spec->join($FindBin::Bin, 'templates');
     die usage() unless GetOptions(
-        'source|src|s=s'       => \$source,
-        'destination|dest|d=s' => \$destination,
-        'environment|env|e=s'  => \$environment,
-        'shebang|S'            => \$shebang,
+        'source|src|s=s'      => \$source_directory,
+        'environment|env|e=s' => \$environment,
+        'templates|t=s'       => \$template_directory,
     );
-    die "Please provide a source, destination, and environment\n"
-        unless $source and $destination and $environment;
 
-    my $www = File::Spec->join($source, 'www');
-    my $etc = File::Spec->join($source, 'etc');
-    die "Source ($source) does not appear to be WordPress site checkout\n"
-        unless -d $www and -d $etc;
+    die "Directory ($template_directory) does not exist"
+        unless -d $template_directory;
 
-    my $configuration = File::Spec->join($etc, $environment);
-    die "Environment ($environment) configuration not found in source ($source)"
-        unless -d $configuration;
+    my $config_file = File::Spec->join($source_directory, 'config.yml');
+    my $users_file = File::Spec->join($source_directory, 'users.txt');
+    my $www_directory = File::Spec->join($source_directory, 'www');
+    die "Source ($source_directory) does not appear to be WordPress site checkout\n"
+        unless -f $config_file and -f $users_file and -d $www_directory;
 
-    my $stage = tempdir(CLEANUP => 1);
-    stage($www, $configuration, $stage);
-    if ($shebang) {
-        my @executables = map { File::Spec->join($stage, $_) } @DEFAULT_EXECUTABLES;
-        add_shebang($DEFAULT_SHEBANG, \@executables);
-        make_executable(\@executables);
-    }
-    deploy($stage, $destination);
+    my $config = YAML::LoadFile($config_file);
+    my @users = split /\s+/, slurp($users_file);
+
+    my $stage_directory = tempdir(CLEANUP => 0);
+
+    stage($www_directory, $template_directory, $config, \@users, $environment, $stage_directory);
+#    deploy($stage_directory, $destination);
 }
 
 
@@ -130,22 +134,69 @@ Usage: $0 [OPTION]...
 
 Available options:
   -s, --source         The path to the site SVN checkout
-  -d, --destination    The destination path or rsync target
   -e, --environment    The environment to deploy (dev, test, prod)
-  -S, --shebang        Add a shebang line to the top of PHP files (where necessary)
+  -t, --templates      The path to the directory containing configuration file
+                       templates
 END_OF_USAGE
 }
 
 sub stage {
-    my ($www, $configuration, $stage, $checkout) = @_;
+    my ($www_directory, $template_directory, $config, $users, $environment, $stage_directory) = @_;
+
+    $config = $config->{$environment};
+    croak "No configuration for '$environment' environment"
+        unless $config;
+
+    stage_wordpress($www_directory, $stage_directory);
+    stage_configuration($config, $users, $template_directory, $stage_directory);
+
+    if (my $shebang = $config->{shebang}) {
+        my @executables = map { File::Spec->join($stage_directory, $_) } @DEFAULT_EXECUTABLES;
+        add_shebang($shebang, \@executables);
+        make_executable(\@executables);
+    }
+
+    # TODO: Add plugin directories
+    # TODO: Add wp-cache symbolic link
+}
+
+sub stage_wordpress {
+    my ($www_directory, $stage_directory) = @_;
 
     my @excludes = @DEFAULT_RSYNC_EXCLUDES;
-    push @excludes, '--exclude', '.svn/';
 
     my @args = @DEFAULT_RSYNC_ARGS;
     push @args, ('--exclude', $_) for @excludes;
 
-    _copy([ $www, $configuration ], $stage, \@args);
+    copy($www_directory, $stage_directory, \@args);
+}
+
+sub stage_configuration {
+    my ($config, $users, $template_directory, $stage_directory) = @_;
+
+    my $tt = Template->new(
+        INCLUDE_PATH => $template_directory,
+        ABSOLUTE     => 1,
+    );
+
+    my $stash = {
+        users => $users,
+        %{ $config },
+    };
+
+    my @files;
+    find(sub {
+        return if -d $File::Find::name;
+        return if $File::Find::dir =~ /\.svn/;
+
+        push @files, $File::Find::name;
+    }, $template_directory);
+
+    foreach my $file (@files) {
+        my $relative = File::Spec->abs2rel($file, $template_directory);
+        my $final = File::Spec->join($stage_directory, $relative);
+        $tt->process($file, $stash, $final) or croak $tt->error . "\n";
+    }
 }
 
 sub add_shebang {
@@ -154,15 +205,10 @@ sub add_shebang {
     foreach my $executable (@$executables) {
         next unless -f $executable;
 
-        my $fh;
-
-        # Slurp the contents
-        open $fh, '<', $executable or die "Error opening $executable: $!";
-        my $content = do { local $/; <$fh> };
-        close $fh;
+        my $content = slurp($executable);
 
         # Add the shebang
-        open $fh, '>', $executable or die "Error opening $executable: $!";
+        open my $fh, '>', $executable or die "Error opening $executable: $!";
         print $fh $shebang . "\n" . $content;
         close $fh;
     }
@@ -175,13 +221,23 @@ sub make_executable {
 }
 
 sub deploy {
-    my ($stage, $destination) = @_;
+    my ($stage_directory, $destination) = @_;
 
-    _copy($stage, $destination, \@DEFAULT_RSYNC_ARGS);
-    # TODO: Add plugin directories (wp-cache and uf-url-cache) and symbolic link (wp-cache)
+    copy($stage_directory, $destination, \@DEFAULT_RSYNC_ARGS);
+    # TODO: suEXEC
 }
 
-sub _copy {
+sub slurp {
+    my ($filename) = @_;
+
+    open my $fh, '<', $filename or croak "Error opening $filename: $!";
+    my $content = do { local $/; <$fh> };
+    close $fh;
+
+    return $content;
+}
+
+sub copy {
     my ($sources, $destination, $args) = @_;
 
     my $ref = ref $sources;

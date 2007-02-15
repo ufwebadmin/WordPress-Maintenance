@@ -1,0 +1,28 @@
+<FilesMatch ^(my-hacks|wp|wp-(atom|blog-header|comments.*|config|feed|links-opml|mail|pass|rdf|register|rss2?|settings|trackback)|xmlrpc)\.php$>
+  Deny from all
+</FilesMatch>
+
+<Files wp-login.php>
+  AuthName "GatorLink"
+  AuthType GatorLink
+  GatorLinkTimeout 60
+  Require user [% users.join(' ') %]
+</Files>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Point /admin to /wp-admin/
+  RewriteRule ^admin(/(.*))?$ wp-admin/$2 [QSA,L,R=permanent]
+</IfModule>
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /studentupdate/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . ./index.php [L]
+</IfModule>
+
+# END WordPress

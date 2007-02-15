@@ -1,0 +1,4 @@
+AuthName "GatorLink"
+AuthType GatorLink
+GatorLinkTimeout 60
+Require user [% users.join(' ') %]
