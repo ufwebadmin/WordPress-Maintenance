@@ -12,6 +12,7 @@ use Template;
 
 use lib File::Spec->join($FindBin::Bin, 'lib');
 use WordPress::Config;
+use WordPress::Directories;
 use WordPress::Executables;
 
 
@@ -57,7 +58,7 @@ sub main {
 
     my $www_directory = File::Spec->join($source_directory, 'www');
     die "Source ($source_directory) does not appear to be WordPress site checkout\n"
-        unless -d $www_directory and -d File::Spec->join($www_directory, 'wp-content');
+        unless -d $www_directory and -d File::Spec->join($www_directory, $WordPress::Directories::CONTENT);
 
     my $config = WordPress::Config->new($source_directory);
     my $environment_config = $config->for_environment($environment);
@@ -99,10 +100,10 @@ sub stage {
     }
 
     # TODO: Fix permissions on wp-content and subdirectories
-    my $wp_content_directory = File::Spec->join($stage_directory, 'wp-content');
+    my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Directories::CONTENT);
 
     # Add plugin directories
-    for (qw(wp-cache uf-url-cache)) {
+    for (@WordPress::Directories::PLUGIN) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
         if (my $server_group = $config->{server_group}) {

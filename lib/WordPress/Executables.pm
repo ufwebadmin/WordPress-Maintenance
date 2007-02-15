@@ -3,6 +3,7 @@ package WordPress::Executables;
 use strict;
 use warnings;
 use File::Spec;
+use WordPress::Directories;
 
 our @ROOT = qw(
     index.php
@@ -67,7 +68,7 @@ our @ADMIN = qw(
 
 our @ALL = (
     @ROOT,
-    map { File::Spec->join('wp-admin', $_) } @ADMIN,
+    map { File::Spec->join($WordPress::Directories::ADMIN, $_) } @ADMIN,
 );
 
 =head1 NAME
