@@ -11,8 +11,6 @@ use IPC::Open3;
 use Net::SSH qw(ssh_cmd);
 use POSIX qw(:sys_wait_h);
 use URI;
-
-use lib File::Spec->join($FindBin::Bin, 'lib');
 use WordPress::Config;
 
 
