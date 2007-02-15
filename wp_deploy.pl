@@ -63,7 +63,7 @@ sub main {
     croak "No configuration for '$environment' environment"
         unless $config->{$environment};
 
-    my $stage_directory = tempdir(CLEANUP => 0);
+    my $stage_directory = tempdir(CLEANUP => 1);
     stage($www_directory, $config->{$environment}, \@users, $template_directory, $stage_directory);
     deploy($stage_directory, $config->{$environment});
 }
@@ -101,6 +101,7 @@ sub stage {
     my $wp_content_directory = File::Spec->join($stage_directory, 'wp-content');
 
     # Add plugin directories
+    # TODO: Refactor
     for (qw(wp-cache uf-url-cache)) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
@@ -111,12 +112,21 @@ sub stage {
     }
 
     # Add wp-cache symbolic link
+    # TODO: Refactor
     my $cwd = Cwd::getcwd();
     chdir $wp_content_directory;
     symlink
         File::Spec->join('plugins', 'wp-cache', 'wp-cache-phase1.php'),
         'advanced-cache.php';
     chdir $cwd;
+
+    # Add robots.txt if requested
+    # TODO: Refactor
+    if ($config->{exclude_robots}) {
+        open my $fh, '>', File::Spec->join($stage_directory, 'robots.txt') or die $!;
+        print $fh "User-agent: *\nDisallow: /\n";
+        close $fh;
+    }
 }
 
 sub stage_wordpress {
