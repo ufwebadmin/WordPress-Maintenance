@@ -7,7 +7,19 @@ use Data::Dumper;
 use File::Spec;
 use File::Temp qw(tempfile);
 use Getopt::Long;
+use URI;
 use YAML ();
+
+
+##
+## Globals
+##
+
+my %DEFAULT_WORDPRESS_OPTIONS = (
+    siteurl                        => '__URI__',
+    home                           => '__URI__',
+    http_authentication_logout_uri => 'http://login.gatorlink.ufl.edu/quit.cgi?__URI__',
+);
 
 
 ##
@@ -57,6 +69,7 @@ sub sync_database {
 
     my $dump_file = dump_database($from_config);
     load_database($to_config, $dump_file);
+    update_options($to_config);
 }
 
 sub dump_database {
@@ -79,7 +92,7 @@ sub dump_database {
         unshift @args, 'ssh', $hostname, '-l', $username;
     }
 
-    print Dumper \@args;
+    system(@args);
 
     return $dump_file;
 }
@@ -99,5 +112,40 @@ sub load_database {
         unshift @args, 'ssh', $hostname, '-l', $username;
     }
 
-    print Dumper \@args;
+    system(@args);
+}
+
+sub update_options {
+    my ($config) = @_;
+
+    my %options = (
+        %DEFAULT_WORDPRESS_OPTIONS,
+        %{ $config->{options} || {} },
+    );
+
+    my $uri = URI->new($config->{uri});
+    $uri->path($config->{base});
+    $uri =~ s/\/$//;
+
+    my ($fh, $options_file) = tempfile(UNLINK => 1);
+    foreach my $option_name (keys %options) {
+        my $option_value = $options{$option_name};
+        $option_value =~ s/__URI__/$uri/g;
+
+        print $fh "UPDATE wp_options SET option_value = '$option_value' WHERE option_name = '$option_name';\n";
+    }
+
+    my @args = (
+        'mysql',
+        '--host=' . $config->{database}->{hostname},
+        '--user=' . $config->{database}->{username},
+        '--password=' . $config->{database}->{password},
+        "< $options_file",
+    );
+
+    if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
+        unshift @args, 'ssh', $hostname, '-l', $username;
+    }
+
+    system(@args);
 }
