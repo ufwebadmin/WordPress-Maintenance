@@ -12,6 +12,8 @@ use Getopt::Long;
 use Template;
 use YAML ();
 
+use lib File::Spec->join($FindBin::Bin, 'lib');
+use WordPress::Executables;
 
 ##
 ## Globals
@@ -28,65 +30,6 @@ our @DEFAULT_RSYNC_EXCLUDES = qw(
     /license.txt
     /readme.html
     /wp-config-sample.php
-);
-our @DEFAULT_EXECUTABLES = qw(
-    index.php
-    wp-atom.php
-    wp-comments-post.php
-    wp-commentsrss2.php
-    wp-feed.php
-    wp-links-opml.php
-    wp-login.php
-    wp-mail.php
-    wp-pass.php
-    wp-rdf.php
-    wp-register.php
-    wp-rss2.php
-    wp-rss.php
-    wp-trackback.php
-    xmlrpc.php
-);
-push @DEFAULT_EXECUTABLES, map { File::Spec->join('wp-admin', $_) } qw(
-    bookmarklet.php
-    categories.php
-    cat-js.php
-    edit-comments.php
-    edit-form-ajax-cat.php
-    edit-pages.php
-    edit.php
-    import.php
-    index.php
-    inline-uploading.php
-    install-helper.php
-    install.php
-    link-add.php
-    link-categories.php
-    link-import.php
-    link-manager.php
-    list-manipulation.php
-    moderation.php
-    options-discussion.php
-    options-general.php
-    options-misc.php
-    options-permalink.php
-    options.php
-    options-reading.php
-    options-writing.php
-    page-new.php
-    plugin-editor.php
-    plugins.php
-    post.php
-    profile.php
-    profile-update.php
-    setup-config.php
-    sidebar.php
-    templates.php
-    theme-editor.php
-    themes.php
-    update-links.php
-    upgrade.php
-    user-edit.php
-    users.php
 );
 
 
@@ -151,7 +94,7 @@ sub stage {
     stage_configuration($config, $users, $template_directory, $stage_directory);
 
     if (my $shebang = $config->{shebang}) {
-        my @executables = map { File::Spec->join($stage_directory, $_) } @DEFAULT_EXECUTABLES;
+        my @executables = map { File::Spec->join($stage_directory, $_) } @WordPress::Executables::ALL;
         add_shebang($shebang, \@executables);
         make_executable(\@executables);
     }
