@@ -1,6 +1,8 @@
-[% IF gatorlink_auth %]
+Options -Indexes
+[% IF gatorlink_auth -%]
+
 AuthName "GatorLink"
 AuthType GatorLink
 GatorLinkTimeout 60
 Require user [% users.join(' ') %]
-[% END %]
+[% END -%]
