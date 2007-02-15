@@ -83,7 +83,7 @@ Available options:
   -e, --environment    The environment to deploy (dev, test, prod)
   -t, --templates      The path to the directory containing configuration file
                        templates
-  -C, --checkout       Keep svn checkout data when deploying
+  -C, --checkout       Keep SVN checkout data when deploying
 END_OF_USAGE
 }
 
@@ -99,7 +99,6 @@ sub stage {
         make_executable(\@executables);
     }
 
-    # TODO: Fix permissions on wp-content and subdirectories
     my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Directories::CONTENT);
 
     # Add plugin directories
