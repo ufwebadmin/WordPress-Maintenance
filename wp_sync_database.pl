@@ -123,7 +123,6 @@ sub run_mysql_command {
     }
     push @args, @$args if ref $args and ref $args eq 'ARRAY';
     push @args, $config->{database}->{name};
-    print Dumper \@args;
 
     my $output;
     if (my $host = $config->{host} and my $user = $config->{user}) {
