@@ -58,6 +58,7 @@ sub main {
 
     my $config = WordPress::Config->new($source_directory);
     my $environment_config = $config->for_environment($environment);
+    exists $environment_config->{gatorlink_auth} or $environment_config->{gatorlink_auth} = 1;
 
     my $stage_directory = tempdir(CLEANUP => 1);
     stage($www_directory, $environment_config, $config->users, $template_directory, $stage_directory, $checkout);

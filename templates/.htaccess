@@ -1,6 +1,7 @@
 <FilesMatch ^(my-hacks|wp|wp-(atom|blog-header|comments.*|config|feed|links-opml|mail|pass|rdf|register|rss2?|settings|trackback)|xmlrpc)\.php$>
   Deny from all
 </FilesMatch>
+[% IF gatorlink_auth -%]
 
 <Files wp-login.php>
   AuthName "GatorLink"
@@ -8,6 +9,7 @@
   GatorLinkTimeout 60
   Require user [% users.join(' ') %]
 </Files>
+[% END -%]
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
