@@ -17,8 +17,8 @@ requires 'IPC::Open3';
 requires 'Net::SSH';
 requires 'POSIX';
 requires 'Template';
-requires 'YAML';
 requires 'URI';
+requires 'YAML';
 
 build_requires 'File::Spec';
 build_requires 'FindBin';
