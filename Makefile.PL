@@ -11,11 +11,13 @@ requires 'File::ShareDir';
 requires 'File::Spec';
 requires 'File::Temp';
 requires 'Getopt::Long';
+requires 'Hash::Merge';
 requires 'IO::Select';
 requires 'IPC::Open3';
 requires 'Net::SSH';
 requires 'POSIX';
 requires 'Template';
+requires 'YAML';
 requires 'URI';
 
 build_requires 'File::Spec';
