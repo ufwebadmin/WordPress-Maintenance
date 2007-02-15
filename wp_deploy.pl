@@ -155,14 +155,10 @@ sub stage_configuration {
         return if -d $File::Find::name;
         return if $File::Find::dir =~ /\.svn/;
 
-        push @files, $File::Find::name;
-    }, $template_directory);
-
-    foreach my $file (@files) {
-        my $relative = File::Spec->abs2rel($file, $template_directory);
+        my $relative = File::Spec->abs2rel($File::Find::name, $template_directory);
         my $final = File::Spec->join($stage_directory, $relative);
-        $tt->process($file, $stash, $final) or croak $tt->error . "\n";
-    }
+        $tt->process($File::Find::name, $stash, $final) or croak $tt->error . "\n";
+    }, $template_directory);
 }
 
 sub add_shebang {
