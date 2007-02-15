@@ -78,6 +78,9 @@ sub _load_config {
     my ($self, $directory, $filename, $merge) = @_;
 
     my $config_file = File::Spec->join($directory, $filename);
+    croak "No configuration file found ($config_file)"
+        unless -f $config_file;
+
     my $config = YAML::LoadFile($config_file);
 
     if ($merge) {
@@ -99,6 +102,9 @@ sub _load_users {
     my ($class, $directory, $filename) = @_;
 
     my $users_file = File::Spec->join($directory, $filename);
+    croak "No users file found ($users_file)"
+        unless -f $users_file;
+
     open my $fh, '<', $users_file or croak $!;
     my @users = split /\s+/, do { local $/; <$fh> };
     close $fh;
