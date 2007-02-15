@@ -176,7 +176,7 @@ sub add_shebang {
 
         my $fh;
 
-        open $fh, '<', $filename or croak "Error opening $filename: $!";
+        open $fh, '<', $executable or croak "Error opening $executable: $!";
         my $content = do { local $/; <$fh> };
         close $fh;
 
