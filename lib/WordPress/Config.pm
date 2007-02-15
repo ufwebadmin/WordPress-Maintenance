@@ -139,4 +139,15 @@ sub users {
     return $self->{users};
 }
 
+=head1 AUTHOR
+
+Daniel Westermann-Clark E<lt>dwc@ufl.eduE<gt>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
 1;
