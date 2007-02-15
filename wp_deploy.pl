@@ -115,6 +115,7 @@ sub deploy {
     my ($stage, $destination) = @_;
 
     _copy($stage, $destination, \@DEFAULT_RSYNC_ARGS);
+    # TODO: Add plugin directories (wp-cache and uf-url-cache) and symbolic link (wp-cache)
 }
 
 sub _copy {
