@@ -7,7 +7,6 @@ use File::Find ();
 use File::ShareDir qw(dist_dir);
 use File::Spec;
 use File::Temp qw(tempdir);
-use FindBin;
 use Getopt::Long;
 use Template;
 use WordPress::Config;

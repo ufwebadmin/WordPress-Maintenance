@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Carp;
 use File::Spec;
-use FindBin;
 use Getopt::Long;
 use IO::Select;
 use IPC::Open3;
