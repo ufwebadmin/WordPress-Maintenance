@@ -1,0 +1,3 @@
+* Refactor scripts to WordPress::Maintenance::Command::* to make them
+  easier to test (see SVK::Command for an example)
+* Run WordPress install after deploy
