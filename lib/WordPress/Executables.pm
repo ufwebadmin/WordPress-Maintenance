@@ -73,8 +73,8 @@ our @MINT = (
 
 our @ALL = (
     @ROOT,
-    map { File::Spec->join($WordPress::Directories::ADMIN, $_) } @ADMIN,
-    map { File::Spec->join($WordPress::Directories::MINT, $_) } @MINT,
+    (map { File::Spec->join($WordPress::Directories::ADMIN, $_) } @ADMIN),
+    (map { File::Spec->join($WordPress::Directories::MINT, $_) } @MINT),
 );
 
 =head1 NAME
