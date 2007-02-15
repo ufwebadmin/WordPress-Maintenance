@@ -153,7 +153,6 @@ sub stage_configuration {
     my @files;
     File::Find::find(sub {
         return if -d $File::Find::name;
-        warn $File::Find::dir;
         return if $File::Find::dir =~ /\B\.svn\b/;
         return if $File::Find::dir =~ /\Bmint\b/
             and not -d File::Spec->join($stage_directory, $WordPress::Directories::MINT);
