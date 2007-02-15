@@ -3,16 +3,17 @@
 use strict;
 use warnings;
 use Carp;
-use Data::Dumper;
 use File::Spec;
-use File::Temp qw(tempfile);
+use FindBin;
 use Getopt::Long;
 use IO::Select;
 use IPC::Open3;
 use Net::SSH qw(ssh_cmd);
 use POSIX qw(:sys_wait_h);
 use URI;
-use YAML ();
+
+use lib File::Spec->join($FindBin::Bin, 'lib');
+use WordPress::Config;
 
 
 ##
@@ -33,23 +34,16 @@ my %DEFAULT_WORDPRESS_OPTIONS = (
 main(@ARGV);
 sub main {
     my $source_directory = File::Spec->curdir;
-    my $from = 'prod';
-    my $to = 'dev';
+    my $from             = 'prod';
+    my $to               = 'dev';
     die usage() unless GetOptions(
         'source|src|s=s' => \$source_directory,
         'from|f=s'       => \$from,
         'to|t=s'         => \$to,
     );
 
-    my $config_file = File::Spec->join($source_directory, 'config.yml');
-
-    my $config = YAML::LoadFile($config_file);
-    foreach my $environment ($from, $to) {
-        croak "No configuration for '$environment' environment"
-            unless $config->{$environment};
-    }
-
-    sync_database($config->{$from}, $config->{$to});
+    my $config = WordPress::Config->new($source_directory);
+    sync_database($config->for_environment($from), $config->for_environment($to));
 }
 
 

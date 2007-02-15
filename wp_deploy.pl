@@ -9,9 +9,9 @@ use File::Temp qw(tempdir);
 use FindBin;
 use Getopt::Long;
 use Template;
-use YAML ();
 
 use lib File::Spec->join($FindBin::Bin, 'lib');
+use WordPress::Config;
 use WordPress::Executables;
 
 
@@ -38,10 +38,10 @@ our @DEFAULT_RSYNC_EXCLUDES = qw(
 
 main(@ARGV);
 sub main {
-    my $source_directory = File::Spec->curdir;
-    my $environment = 'dev';
+    my $source_directory   = File::Spec->curdir;
+    my $environment        = 'dev';
     my $template_directory = File::Spec->join($FindBin::Bin, 'templates');
-    my $checkout = 0;
+    my $checkout           = 0;
     die usage() unless GetOptions(
         'source|src|s=s'      => \$source_directory,
         'environment|env|e=s' => \$environment,
@@ -52,21 +52,16 @@ sub main {
     die "Directory ($template_directory) does not exist"
         unless -d $template_directory;
 
-    my $config_file = File::Spec->join($source_directory, 'config.yml');
-    my $users_file = File::Spec->join($source_directory, 'users.txt');
     my $www_directory = File::Spec->join($source_directory, 'www');
     die "Source ($source_directory) does not appear to be WordPress site checkout\n"
-        unless -f $config_file and -f $users_file and -d $www_directory;
+        unless -d $www_directory and -d File::Spec->join($www_directory, 'wp-content');
 
-    my $config = YAML::LoadFile($config_file);
-    my @users = split /\s+/, slurp($users_file);
-
-    croak "No configuration for '$environment' environment"
-        unless $config->{$environment};
+    my $config = WordPress::Config->new($source_directory);
+    my $environment_config = $config->for_environment($environment);
 
     my $stage_directory = tempdir(CLEANUP => 1);
-    stage($www_directory, $config->{$environment}, \@users, $template_directory, $stage_directory, $checkout);
-    deploy($stage_directory, $config->{$environment});
+    stage($www_directory, $environment_config, $config->users, $template_directory, $stage_directory, $checkout);
+    deploy($stage_directory, $environment_config);
 }
 
 
