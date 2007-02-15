@@ -24,6 +24,9 @@ our @DEFAULT_RSYNC_ARGS = qw(
     --verbose
     --compress
     --delete-after
+    --no-perms
+    --no-group
+    --chmod=ugo=rwX
 );
 our @DEFAULT_RSYNC_EXCLUDES = qw(
     /license.txt
