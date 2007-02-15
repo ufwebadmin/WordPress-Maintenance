@@ -60,10 +60,12 @@ sub main {
     my $config = YAML::LoadFile($config_file);
     my @users = split /\s+/, slurp($users_file);
 
-    my $stage_directory = tempdir(CLEANUP => 0);
+    croak "No configuration for '$environment' environment"
+        unless $config->{$environment};
 
-    stage($www_directory, $template_directory, $config, \@users, $environment, $stage_directory);
-#    deploy($stage_directory, $destination);
+    my $stage_directory = tempdir(CLEANUP => 0);
+    stage($www_directory, $config->{$environment}, \@users, $template_directory, $stage_directory);
+    deploy($stage_directory, $config->{$environment});
 }
 
 
@@ -84,11 +86,7 @@ END_OF_USAGE
 }
 
 sub stage {
-    my ($www_directory, $template_directory, $config, $users, $environment, $stage_directory) = @_;
-
-    $config = $config->{$environment};
-    croak "No configuration for '$environment' environment"
-        unless $config;
+    my ($www_directory, $config, $users, $template_directory, $stage_directory) = @_;
 
     stage_wordpress($www_directory, $stage_directory);
     stage_configuration($config, $users, $template_directory, $stage_directory);
@@ -164,10 +162,17 @@ sub make_executable {
 }
 
 sub deploy {
-    my ($stage_directory, $destination) = @_;
+    my ($stage_directory, $config) = @_;
 
-    copy($stage_directory, $destination, \@DEFAULT_RSYNC_ARGS);
-    # TODO: suEXEC
+    my $target = $config->{path};
+    if (my $username = $config->{username} and my $hostname = $config->{hostname}) {
+        $target = "${username}@${hostname}:${target}";
+    }
+
+    copy($stage_directory, $target, \@DEFAULT_RSYNC_ARGS);
+    if (my $username = $config->{username} and my $group = $config->{group}) {
+        system('ssh', $config->{hostname}, '-l', $username, 'find', $config->{path}, '-print0', '|', 'xargs', '-0', 'chown', "$username:$group");
+    }
 }
 
 sub slurp {
