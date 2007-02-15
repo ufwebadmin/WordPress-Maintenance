@@ -198,7 +198,7 @@ sub deploy {
     my ($stage_directory, $config) = @_;
 
     my $target = $config->{path};
-    if (my $username = $config->{username} and my $hostname = $config->{hostname}) {
+    if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
         $target = $username . '@' . $hostname . ':' . $target;
     }
 
