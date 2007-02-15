@@ -127,10 +127,11 @@ sub run_mysql_command {
     my $output;
     if (my $host = $config->{host} and my $user = $config->{user}) {
         $output = ssh_cmd({
-            user    => $user,
-            host    => $host,
-            command => $command,
-            args    => \@args,
+            user         => $user,
+            host         => $host,
+            command      => $command,
+            args         => \@args,
+            stdin_string => $input,
         });
     }
     else {
