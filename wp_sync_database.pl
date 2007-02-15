@@ -123,8 +123,8 @@ sub update_options {
         %{ $config->{options} || {} },
     );
 
+    # WordPress doesn't like trailing slashes
     my $uri = URI->new($config->{uri});
-    $uri->path($config->{base});
     $uri =~ s/\/$//;
 
     my ($fh, $options_file) = tempfile(UNLINK => 1);
