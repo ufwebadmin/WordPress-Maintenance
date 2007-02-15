@@ -97,6 +97,9 @@ sub stage {
         make_executable(\@executables);
     }
 
+    # TODO: Fix permissions on wp-content and subdirectories
+    my $wp_content_directory = File::Spec->join($stage_directory, 'wp-content');
+
     # Add plugin directories
     for (qw(wp-cache uf-url-cache)) {
         my $directory = File::Spec->join($wp_content_directory, $_);
