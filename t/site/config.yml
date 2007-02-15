@@ -1,0 +1,64 @@
+--- #YAML:1.0
+# Do not use tabs for indentation or label/value separation!
+dev:
+  server_group:   apache
+  group:          webadmin
+  path:           /var/www/dev.webadmin.ufl.edu/htdocs/test
+  uri:            http://dev.webadmin.ufl.edu/test
+  base:           /test/
+  exclude_robots: 1
+  wordpress:
+    wp_cache:
+      enabled: 0
+    options:
+      fake_cache_ttl: 300
+  database:
+    host:          localhost
+    user:          test
+    password:      secret1
+    name:          test
+    dump_encoding: utf8
+
+test:
+  host:           nersp.osg.ufl.edu
+  user:           wwwuf
+  group:          webuf
+  path:           /nerdc/www/test.test.ufl.edu
+  uri:            http://test.test.ufl.edu
+  base:           /
+  shebang:        #!/usr/local/bin/php
+  exclude_robots: 1
+  wordpress:
+    wp_cache:
+      enabled: 1
+    options:
+      fake_cache_ttl: 3600
+  database:
+    host:          mysql01.osg.ufl.edu
+    port:          3306
+    user:          test
+    password:      secret2
+    name:          test
+    dump_encoding: latin1
+
+prod:
+  host:           nersp.osg.ufl.edu
+  user:           wwwuf
+  group:          webuf
+  path:           /nerdc/www/test.ufl.edu
+  uri:            http://test.ufl.edu
+  base:           /
+  shebang:        #!/usr/local/bin/php
+  exclude_robots: 0
+  wordpress:
+    wp_cache:
+      enabled: 1
+    options:
+      fake_cache_ttl: 3600
+  database:
+    host:          mysql01.osg.ufl.edu
+    port:          3306
+    user:          test
+    password:      secret3
+    name:          test
+    dump_encoding: latin1

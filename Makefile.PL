@@ -16,6 +16,8 @@ requires 'POSIX';
 requires 'Template';
 requires 'URI';
 
+build_requires 'File::Spec';
+build_requires 'FindBin';
 build_requires 'Test::More';
 
 install_script glob('script/*.pl');
