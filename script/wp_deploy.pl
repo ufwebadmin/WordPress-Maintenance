@@ -9,9 +9,9 @@ use File::Spec;
 use File::Temp qw(tempdir);
 use Getopt::Long;
 use Template;
-use WordPress::Config;
-use WordPress::Directories;
-use WordPress::Executables;
+use WordPress::Maintenance::Config;
+use WordPress::Maintenance::Directories;
+use WordPress::Maintenance::Executables;
 
 
 ##
@@ -42,7 +42,7 @@ main(@ARGV);
 sub main {
     my $source_directory   = File::Spec->curdir;
     my $environment        = 'dev';
-    my $template_directory = dist_dir('WordPress');
+    my $template_directory = dist_dir('WordPress::Maintenance');
     my $checkout           = 0;
     die usage() unless GetOptions(
         'source|src|s=s'      => \$source_directory,
@@ -56,9 +56,9 @@ sub main {
 
     my $www_directory = File::Spec->join($source_directory, 'www');
     die "Source ($source_directory) does not appear to be WordPress site checkout\n"
-        unless -d $www_directory and -d File::Spec->join($www_directory, $WordPress::Directories::CONTENT);
+        unless -d $www_directory and -d File::Spec->join($www_directory, $WordPress::Maintenance::Directories::CONTENT);
 
-    my $config = WordPress::Config->new($source_directory);
+    my $config = WordPress::Maintenance::Config->new($source_directory);
     my $environment_config = $config->for_environment($environment);
     exists $environment_config->{gatorlink_auth} or $environment_config->{gatorlink_auth} = 1;
 
@@ -92,15 +92,15 @@ sub stage {
     stage_configuration($config, $users, $template_directory, $stage_directory);
 
     if (my $shebang = $config->{shebang}) {
-        my @executables = map { File::Spec->join($stage_directory, $_) } @WordPress::Executables::ALL;
+        my @executables = map { File::Spec->join($stage_directory, $_) } @WordPress::Maintenance::Executables::ALL;
         add_shebang($shebang, \@executables);
         make_executable(\@executables);
     }
 
-    my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Directories::CONTENT);
+    my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Maintenance::Directories::CONTENT);
 
     # Add plugin directories
-    for (@WordPress::Directories::PLUGIN) {
+    for (@WordPress::Maintenance::Directories::PLUGIN) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
     }
@@ -153,7 +153,7 @@ sub stage_configuration {
         return if -d $File::Find::name;
         return if $File::Find::dir =~ /\B\.svn\b/;
         return if $File::Find::dir =~ /\Bmint\b/
-            and not -d File::Spec->join($stage_directory, $WordPress::Directories::MINT);
+            and not -d File::Spec->join($stage_directory, $WordPress::Maintenance::Directories::MINT);
 
         my $relative = File::Spec->abs2rel($File::Find::name, $template_directory);
         my $final = File::Spec->join($stage_directory, $relative);
@@ -198,8 +198,8 @@ sub deploy {
     set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
 
     if (my $server_group = $config->{server_group}) {
-        for (@WordPress::Directories::PLUGIN) {
-            my $directory = File::Spec->join($config->{path}, $WordPress::Directories::CONTENT, $_);
+        for (@WordPress::Maintenance::Directories::PLUGIN) {
+            my $directory = File::Spec->join($config->{path}, $WordPress::Maintenance::Directories::CONTENT, $_);
             set_ownership($directory, $config->{user}, $server_group, $config->{host});
         }
     }

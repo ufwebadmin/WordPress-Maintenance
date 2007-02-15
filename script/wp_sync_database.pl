@@ -10,7 +10,7 @@ use IPC::Open3;
 use Net::SSH qw(ssh_cmd);
 use POSIX qw(:sys_wait_h);
 use URI;
-use WordPress::Config;
+use WordPress::Maintenance::Config;
 
 
 ##
@@ -39,7 +39,7 @@ sub main {
         'to|t=s'         => \$to,
     );
 
-    my $config = WordPress::Config->new($source_directory);
+    my $config = WordPress::Maintenance::Config->new($source_directory);
     sync_database($config->for_environment($from), $config->for_environment($to));
 }
 
