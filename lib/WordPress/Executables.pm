@@ -66,14 +66,20 @@ our @ADMIN = qw(
     users.php
 );
 
+our @MINT = (
+    'index.php',
+    File::Spec->join(qw/pepper colbymakowsky sparks sparks.php/),
+);
+
 our @ALL = (
     @ROOT,
     map { File::Spec->join($WordPress::Directories::ADMIN, $_) } @ADMIN,
+    map { File::Spec->join($WordPress::Directories::MINT, $_) } @MINT,
 );
 
 =head1 NAME
 
-WordPress::Executables - List files which WordPress needs to execute
+WordPress::Executables - List WordPress-related files which need execute bits
 
 =head1 SYNOPSIS
 
@@ -84,6 +90,9 @@ WordPress::Executables - List files which WordPress needs to execute
 
     # Just those in wp-admin
     print join ', ', @WordPress::Executables::ADMIN;
+
+    # Just those in mint
+    print join ', ', @WordPress::Executables::MINT;
 
     # All of the above (those in e.g. wp-admin have appropriate
     # directory prepended)

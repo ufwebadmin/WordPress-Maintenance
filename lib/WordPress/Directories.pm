@@ -7,6 +7,7 @@ use File::Spec;
 our $ADMIN = 'wp-admin';
 our $CONTENT = 'wp-content';
 our $INCLUDES = 'wp-includes';
+our $MINT = 'mint';
 
 our @PLUGIN = qw(
     uf-url-cache
@@ -17,12 +18,13 @@ our @ALL = (
     $ADMIN,
     $CONTENT,
     $INCLUDES,
+    $MINT,
     map { File::Spec->join($CONTENT, $_) } @PLUGIN,
 );
 
 =head1 NAME
 
-WordPress::Directories - List files which WordPress needs to execute
+WordPress::Directories - List WordPress-related directories
 
 =head1 SYNOPSIS
 
@@ -31,10 +33,11 @@ WordPress::Directories - List files which WordPress needs to execute
     # Just those required by plugins in the default UF WordPress install
     print join ', ', @WordPress::Directories::PLUGIN;
 
-    # Just wp-admin, wp-content, and wp-includes
+    # Just wp-admin, wp-content, wp-includes, and mint
     print $WordPress::Directories::ADMIN;
     print $WordPress::Directories::CONTENT;
     print $WordPress::Directories::INCLUDES;
+    print $WordPress::Directories::MINT;
 
     # All of the above
     print join ', ', @WordPress::Directories::ALL;
