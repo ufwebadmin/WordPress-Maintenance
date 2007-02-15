@@ -53,7 +53,12 @@ sub main {
 
     my $stage = tempdir(CLEANUP => 1);
     stage($www, $configuration, $stage, $checkout);
-    add_shebang($DEFAULT_SHEBANG, $stage) if $shebang;
+    if ($shebang) {
+        my @executables = @DEFAULT_EXECUTABLES;
+        add_shebang($DEFAULT_SHEBANG, \@executables, $stage);
+        make_executable(\@executables, $stage);
+        # TODO: How to handle suexec?
+    }
     deploy($stage, $destination);
 }
 
@@ -94,8 +99,14 @@ sub stage {
     _copy([ $www, $configuration ], $stage, \@args);
 }
 
+# TODO
 sub add_shebang {
-    my ($shebang, $directory) = @_;
+    my ($shebang, $executables, $directory) = @_;
+}
+
+# TODO
+sub make_executable {
+    my ($executables, $directory) = @_;
 }
 
 sub deploy {
