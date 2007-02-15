@@ -95,7 +95,6 @@ sub main {
         'source|src|s=s'       => \$source,
         'destination|dest|d=s' => \$destination,
         'environment|env|e=s'  => \$environment,
-        'checkout|C'           => \$checkout,
         'shebang|S'            => \$shebang,
     );
     die "Please provide a source, destination, and environment\n"
@@ -111,12 +110,11 @@ sub main {
         unless -d $configuration;
 
     my $stage = tempdir(CLEANUP => 1);
-    stage($www, $configuration, $stage, $checkout);
+    stage($www, $configuration, $stage);
     if ($shebang) {
-        my @executables = map { File::Spec->join($stage, $executable) } @DEFAULT_EXECUTABLES;
+        my @executables = map { File::Spec->join($stage, $_) } @DEFAULT_EXECUTABLES;
         add_shebang($DEFAULT_SHEBANG, \@executables);
         make_executable(\@executables);
-        # TODO: How to handle suexec?
     }
     deploy($stage, $destination);
 }
@@ -134,7 +132,6 @@ Available options:
   -s, --source         The path to the site SVN checkout
   -d, --destination    The destination path or rsync target
   -e, --environment    The environment to deploy (dev, test, prod)
-  -C, --checkout       Keep svn checkout data when deploying
   -S, --shebang        Add a shebang line to the top of PHP files (where necessary)
 END_OF_USAGE
 }
@@ -143,14 +140,7 @@ sub stage {
     my ($www, $configuration, $stage, $checkout) = @_;
 
     my @excludes = @DEFAULT_RSYNC_EXCLUDES;
-    if ($checkout) {
-        # Don't overwrite the checkout files from $www
-        push @excludes, File::Spec->join($configuration, '.svn/');
-        push @excludes, File::Spec->join($configuration, '**', '.svn/');
-    }
-    else {
-        push @excludes, '--exclude', '.svn/';
-    }
+    push @excludes, '--exclude', '.svn/';
 
     my @args = @DEFAULT_RSYNC_ARGS;
     push @args, ('--exclude', $_) for @excludes;
@@ -173,7 +163,7 @@ sub add_shebang {
 
         # Add the shebang
         open $fh, '>', $executable or die "Error opening $executable: $!";
-        print $fh, $shebang, "\n", $content;
+        print $fh $shebang . "\n" . $content;
         close $fh;
     }
 }
