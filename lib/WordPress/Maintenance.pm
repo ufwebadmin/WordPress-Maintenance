@@ -1,4 +1,4 @@
-package WordPress;
+package WordPress::Maintenance;
 
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-WordPress - Configuration and file maintenance for WordPress instances
+WordPress::Maintenance - Configuration and file maintenance for WordPress instances
 
 =head1 DESCRIPTION
 
@@ -19,11 +19,11 @@ instance can be deployed with a single command.
 
 =over 4
 
-=item * L<WordPress::Config>
+=item * L<WordPress::Maintenance::Config>
 
-=item * L<WordPress::Directories>
+=item * L<WordPress::Maintenance::Directories>
 
-=item * L<WordPress::Executables>
+=item * L<WordPress::Maintenance::Executables>
 
 =back
 

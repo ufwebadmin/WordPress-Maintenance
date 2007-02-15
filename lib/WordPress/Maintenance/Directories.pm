@@ -1,4 +1,4 @@
-package WordPress::Directories;
+package WordPress::Maintenance::Directories;
 
 use strict;
 use warnings;
@@ -24,23 +24,23 @@ our @ALL = (
 
 =head1 NAME
 
-WordPress::Directories - List WordPress-related directories
+WordPress::Maintenance::Directories - List WordPress-related directories
 
 =head1 SYNOPSIS
 
     use WordPres::Directories;
 
     # Just those required by plugins in the default UF WordPress install
-    print join ', ', @WordPress::Directories::PLUGIN;
+    print join ', ', @WordPress::Maintenance::Directories::PLUGIN;
 
     # Just wp-admin, wp-content, wp-includes, and mint
-    print $WordPress::Directories::ADMIN;
-    print $WordPress::Directories::CONTENT;
-    print $WordPress::Directories::INCLUDES;
-    print $WordPress::Directories::MINT;
+    print $WordPress::Maintenance::Directories::ADMIN;
+    print $WordPress::Maintenance::Directories::CONTENT;
+    print $WordPress::Maintenance::Directories::INCLUDES;
+    print $WordPress::Maintenance::Directories::MINT;
 
     # All of the above
-    print join ', ', @WordPress::Directories::ALL;
+    print join ', ', @WordPress::Maintenance::Directories::ALL;
 
 =head1 DESCRIPTION
 

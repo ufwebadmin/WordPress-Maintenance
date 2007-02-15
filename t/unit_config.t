@@ -2,12 +2,12 @@ use strict;
 use warnings;
 use File::Spec;
 use FindBin;
-use WordPress::Config;
+use WordPress::Maintenance::Config;
 
 use Test::More tests => 50;
 
-my $config = WordPress::Config->new(File::Spec->join($FindBin::Dir, 'site'));
-isa_ok($config, 'WordPress::Config');
+my $config = WordPress::Maintenance::Config->new(File::Spec->join($FindBin::Dir, 'site'));
+isa_ok($config, 'WordPress::Maintenance::Config');
 
 my $dev = $config->for_environment('dev');
 is($dev->{server_group}, 'apache');

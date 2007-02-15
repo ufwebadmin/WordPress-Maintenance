@@ -1,9 +1,9 @@
-package WordPress::Executables;
+package WordPress::Maintenance::Executables;
 
 use strict;
 use warnings;
 use File::Spec;
-use WordPress::Directories;
+use WordPress::Maintenance::Directories;
 
 our @ROOT = qw(
     index.php
@@ -73,30 +73,30 @@ our @MINT = (
 
 our @ALL = (
     @ROOT,
-    (map { File::Spec->join($WordPress::Directories::ADMIN, $_) } @ADMIN),
-    (map { File::Spec->join($WordPress::Directories::MINT, $_) } @MINT),
+    (map { File::Spec->join($WordPress::Maintenance::Directories::ADMIN, $_) } @ADMIN),
+    (map { File::Spec->join($WordPress::Maintenance::Directories::MINT, $_) } @MINT),
 );
 
 =head1 NAME
 
-WordPress::Executables - List WordPress-related files which need execute bits
+WordPress::Maintenance::Executables - List WordPress-related files which need execute bits
 
 =head1 SYNOPSIS
 
     use WordPres::Executables;
 
     # Just those in the WordPress root
-    print join ', ', @WordPress::Executables::ROOT;
+    print join ', ', @WordPress::Maintenance::Executables::ROOT;
 
     # Just those in wp-admin
-    print join ', ', @WordPress::Executables::ADMIN;
+    print join ', ', @WordPress::Maintenance::Executables::ADMIN;
 
     # Just those in mint
-    print join ', ', @WordPress::Executables::MINT;
+    print join ', ', @WordPress::Maintenance::Executables::MINT;
 
     # All of the above (those in e.g. wp-admin have appropriate
     # directory prepended)
-    print join ', ', @WordPress::Executables::ALL;
+    print join ', ', @WordPress::Maintenance::Executables::ALL;
 
 =head1 DESCRIPTION
 

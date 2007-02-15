@@ -1,4 +1,4 @@
-package WordPress::Config;
+package WordPress::Maintenance::Config;
 
 use strict;
 use warnings;
@@ -21,13 +21,13 @@ our $DEFAULT_USERS_FILENAME = 'users.txt';
 
 =head1 NAME
 
-WordPress::Config - Load configuration for a WordPress instance
+WordPress::Maintenance::Config - Load configuration for a WordPress instance
 
 =head1 SYNOPSIS
 
     use WordPres::Config;
 
-    my $config = WordPress::Config->new;
+    my $config = WordPress::Maintenance::Config->new;
     my $environment_config = $config->for_environment('dev');
     my $users = $config->users;
 

@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name 'WordPress';
-all_from 'lib/WordPress.pm';
+name 'WordPress-Maintenance';
+all_from 'lib/WordPress/Maintenance.pm';
 
 requires 'Carp';
 requires 'File::Find';
