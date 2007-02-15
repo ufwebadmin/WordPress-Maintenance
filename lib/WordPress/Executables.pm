@@ -2,6 +2,7 @@ package WordPress::Executables;
 
 use strict;
 use warnings;
+use File::Spec;
 
 our @ROOT = qw(
     index.php
@@ -64,7 +65,10 @@ our @ADMIN = qw(
     users.php
 );
 
-our @ALL = @ROOT, map { File::Spec->join('wp-admin', $_) } @ADMIN;
+our @ALL = (
+    @ROOT,
+    map { File::Spec->join('wp-admin', $_) } @ADMIN,
+);
 
 =head1 NAME
 
