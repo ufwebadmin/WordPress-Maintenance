@@ -18,11 +18,13 @@ our @DEFAULT_RSYNC_ARGS = qw(
     --delete-after
 );
 our @DEFAULT_RSYNC_EXCLUDES = qw(
-    license.txt
-    readme.html
-    wp-config-sample.php
+    /license.txt
+    /readme.html
+    /wp-config-sample.php
 );
 our $DEFAULT_SHEBANG  = '#!/usr/local/bin/php';
+our @DEFAULT_EXECUTABLES = qw(
+);
 
 
 ##
