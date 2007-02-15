@@ -97,8 +97,23 @@ sub stage {
         make_executable(\@executables);
     }
 
-    # TODO: Add plugin directories
-    # TODO: Add wp-cache symbolic link
+    # Add plugin directories
+    for (qw(wp-cache uf-url-cache)) {
+        my $directory = File::Spec->join($wp_content_directory, $_);
+        mkdir $directory;
+        if ($config->{group} and not $config->{username}) {
+            system('chgrp', $config->{group}, $directory);
+            chmod 0771, $directory;
+        }
+    }
+
+    # Add wp-cache symbolic link
+    my $cwd = Cwd::getcwd();
+    chdir $wp_content_directory;
+    symlink
+        File::Spec->join('plugins', 'wp-cache', 'wp-cache-phase1.php'),
+        'advanced-cache.php';
+    chdir $cwd;
 }
 
 sub stage_wordpress {
