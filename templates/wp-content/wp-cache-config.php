@@ -1,6 +1,6 @@
 <?php
 $cache_enabled = [% wordpress.wp_cache.enabled ? 'true' : 'false' %];
-$cache_max_time = 3600; // seconds
+$cache_max_time = [% wordpress.wp_cache.ttl || 3600 %]; // seconds
 $use_flock = true;
 $cache_path = ABSPATH . 'wp-content/wp-cache/';
 $file_prefix = 'wp-cache-';
