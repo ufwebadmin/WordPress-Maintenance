@@ -80,6 +80,7 @@ sub dump_database {
     my @args = (
         'mysqldump',
         '--host=' . $config->{database}->{hostname},
+        '--port=' . $config->{database}->{port},
         '--user=' . $config->{database}->{username},
         '--password=' . $config->{database}->{password},
         '--add-drop-table',
@@ -92,6 +93,9 @@ sub dump_database {
         unshift @args, 'ssh', $hostname, '-l', $username;
     }
 
+    push @args
+
+    print Dumper \@args;
     system(@args);
 
     return $dump_file;
@@ -103,8 +107,10 @@ sub load_database {
     my @args = (
         'mysql',
         '--host=' . $config->{database}->{hostname},
+        '--port=' . $config->{database}->{port},
         '--user=' . $config->{database}->{username},
         '--password=' . $config->{database}->{password},
+        $config->{database}->{name},
         "< $dump_file",
     );
 
@@ -112,6 +118,7 @@ sub load_database {
         unshift @args, 'ssh', $hostname, '-l', $username;
     }
 
+    print Dumper \@args;
     system(@args);
 }
 
@@ -138,8 +145,10 @@ sub update_options {
     my @args = (
         'mysql',
         '--host=' . $config->{database}->{hostname},
+        '--port=' . $config->{database}->{port},
         '--user=' . $config->{database}->{username},
         '--password=' . $config->{database}->{password},
+        $config->{database}->{name},
         "< $options_file",
     );
 
@@ -147,5 +156,6 @@ sub update_options {
         unshift @args, 'ssh', $hostname, '-l', $username;
     }
 
+    print Dumper \@args;
     system(@args);
 }
