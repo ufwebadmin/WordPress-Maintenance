@@ -95,7 +95,7 @@ sub update_options {
 
     my %options = (
         %DEFAULT_WORDPRESS_OPTIONS,
-        %{ $config->{options} || {} },
+        %{ $config->{wordpress}->{options} || {} },
     );
 
     # WordPress doesn't like trailing slashes
