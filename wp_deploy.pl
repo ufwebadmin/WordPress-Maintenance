@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 use Carp;
-use Data::Dumper;
-use File::Find;
+use File::Find ();
 use File::Spec;
 use File::Temp qw(tempdir);
 use FindBin;
@@ -14,6 +13,7 @@ use YAML ();
 
 use lib File::Spec->join($FindBin::Bin, 'lib');
 use WordPress::Executables;
+
 
 ##
 ## Globals
@@ -126,7 +126,7 @@ sub stage_configuration {
     };
 
     my @files;
-    find(sub {
+    File::Find::find(sub {
         return if -d $File::Find::name;
         return if $File::Find::dir =~ /\.svn/;
 
