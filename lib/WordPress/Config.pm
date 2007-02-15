@@ -21,7 +21,7 @@ our $DEFAULT_USERS_FILENAME = 'users.txt';
 
 =head1 NAME
 
-WordPress::Executables - List files which WordPress needs to execute
+WordPress::Config - Load configuration for a WordPress instance
 
 =head1 SYNOPSIS
 
