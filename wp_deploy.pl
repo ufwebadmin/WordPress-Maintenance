@@ -203,40 +203,26 @@ sub deploy {
     }
 
     copy($stage_directory, $target, \@DEFAULT_RSYNC_ARGS);
-    set_ownership($config);
+    set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
 }
 
 sub set_ownership {
-    my ($config) = @_;
+    my ($path, $user, $group, $host) = @_;
 
-    my $path = $config->{path};
-    if (my $group = $config->{group}) {
-        my @cmd = ('find', $path);
+    return unless $group;
 
-        # Don't reset permissions on wp-cache et al
-        if (my $server_group = $config->{server_group}) {
-            push @cmd, '-not', '-group', $server_group;
-        }
-
-        push @cmd, '-exec';
-        if (my $user = $config->{user}) {
-            push @cmd, 'chown', "$user:$group";
-        }
-        else {
-            push @cmd, 'chgrp', $group;
-        }
-        push @cmd, '{}';
-
-        if (my $host = $config->{host} and my $user = $config->{user}) {
-            unshift @cmd, 'ssh', $host, '-l', $user;
-            push @cmd, '\;';
-        }
-        else {
-            push @cmd, ';';
-        }
-
-        system(@cmd);
+    my @cmd = ('chgrp', '-R', $group);
+    if ($user) {
+        @cmd = ('chown', '-R', "$user:$group");
     }
+
+    push @cmd, $path;
+
+    if ($host) {
+        unshift @cmd, 'ssh', $host, '-l', $user;
+    }
+
+    system(@cmd);
 }
 
 sub copy {
