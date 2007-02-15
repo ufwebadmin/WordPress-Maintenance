@@ -113,9 +113,9 @@ sub main {
     my $stage = tempdir(CLEANUP => 1);
     stage($www, $configuration, $stage, $checkout);
     if ($shebang) {
-        my @executables = @DEFAULT_EXECUTABLES;
-        add_shebang($DEFAULT_SHEBANG, \@executables, $stage);
-        make_executable(\@executables, $stage);
+        my @executables = map { File::Spec->join($stage, $executable) } @DEFAULT_EXECUTABLES;
+        add_shebang($DEFAULT_SHEBANG, \@executables);
+        make_executable(\@executables);
         # TODO: How to handle suexec?
     }
     deploy($stage, $destination);
@@ -159,10 +159,9 @@ sub stage {
 }
 
 sub add_shebang {
-    my ($shebang, $executables, $directory) = @_;
+    my ($shebang, $executables) = @_;
 
     foreach my $executable (@$executables) {
-        $executable = File::Spec->join($directory, $executable);
         next unless -f $executable;
 
         my $fh;
@@ -179,9 +178,10 @@ sub add_shebang {
     }
 }
 
-# TODO
 sub make_executable {
-    my ($executables, $directory) = @_;
+    my ($executables) = @_;
+
+    chmod 0755, grep { -f } @$executables;
 }
 
 sub deploy {
