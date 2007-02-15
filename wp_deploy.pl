@@ -174,10 +174,14 @@ sub add_shebang {
     foreach my $executable (@$executables) {
         next unless -f $executable;
 
-        my $content = slurp($executable);
+        my $fh;
+
+        open $fh, '<', $filename or croak "Error opening $filename: $!";
+        my $content = do { local $/; <$fh> };
+        close $fh;
 
         # Add the shebang
-        open my $fh, '>', $executable or die "Error opening $executable: $!";
+        open $fh, '>', $executable or die "Error opening $executable: $!";
         print $fh $shebang, "\n", $content;
         close $fh;
     }
@@ -211,16 +215,6 @@ sub set_ownership {
       and my $group = $config->{group}) {
         system('ssh', $host, '-l', $user, 'find', $path, '-print0', '|', 'xargs', '-0', 'chown', "$user:$group");
     }
-}
-
-sub slurp {
-    my ($filename) = @_;
-
-    open my $fh, '<', $filename or croak "Error opening $filename: $!";
-    my $content = do { local $/; <$fh> };
-    close $fh;
-
-    return $content;
 }
 
 sub copy {
