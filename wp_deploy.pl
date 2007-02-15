@@ -219,16 +219,24 @@ sub set_ownership {
             push @cmd, '-not', '-group', $server_group;
         }
 
-        push @cmd, '-exec';
         if (my $user = $config->{user}) {
+            if (my $host = $config->{host}) {
+                push @cmd, qw/-print0 | xargs -0/;
+                unshift @cmd, 'ssh', $host, '-l', $user;
+            }
+            else {
+                push @cmd, '-exec';
+            }
+
             push @cmd, 'chown', "$user:$group";
-            unshift @cmd, 'ssh', $config->{host}, '-l', $user
-                if $config->{host};
+
+            unless ($config->{host}) {
+                push @cmd, '{}', ';';
+            }
         }
         else {
-            push @cmd, 'chgrp', $group;
+            push @cmd, '-exec', 'chgrp', $group, '{}', ';';
         }
-        push @cmd, '{}', ';';
 
         system(@cmd);
     }
