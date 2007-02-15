@@ -1,9 +1,9 @@
 <?php
 // ** MySQL settings ** //
 define('DB_NAME', '[% database.name %]');    // The name of the database
-define('DB_USER', '[% database.username %]');     // Your MySQL username
+define('DB_USER', '[% database.user %]');     // Your MySQL username
 define('DB_PASSWORD', '[% database.password %]'); // ...and password
-define('DB_HOST', '[% database.hostname %][% IF database.port %]:[% database.port %][% END %]');    // 99% chance you won't need to change this value
+define('DB_HOST', '[% database.host %][% IF database.port %]:[% database.port %][% END %]');    // 99% chance you won't need to change this value
 
 // You can have multiple installations in one database if you give each a unique prefix
 $table_prefix  = 'wp_';   // Only numbers, letters, and underscores please!

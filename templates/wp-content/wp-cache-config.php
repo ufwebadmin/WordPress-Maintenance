@@ -5,7 +5,7 @@ WP-Cache Config Sample File
 See wp-cache.php for author details.
 */
 
-$cache_enabled = [% wp_cache ? 'true' : 'false' %]; //Added by WP-Cache Manager
+$cache_enabled = [% wordpress.wp_cache ? 'true' : 'false' %]; //Added by WP-Cache Manager
 $cache_max_time = 3600; //in seconds
 $use_flock = true; // Set it true or false if you know what to use
 $cache_path = ABSPATH . 'wp-content/wp-cache/';

@@ -107,7 +107,7 @@ sub stage {
     for (qw(wp-cache uf-url-cache)) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
-        if ($config->{group} and not $config->{username}) {
+        if ($config->{group} and not $config->{user}) {
             system('chgrp', $config->{group}, $directory);
             chmod 0771, $directory;
         }
@@ -198,8 +198,8 @@ sub deploy {
     my ($stage_directory, $config) = @_;
 
     my $target = $config->{path};
-    if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
-        $target = $username . '@' . $hostname . ':' . $target;
+    if (my $host = $config->{host} and my $user = $config->{user}) {
+        $target = $user . '@' . $host . ':' . $target;
     }
 
     copy($stage_directory, $target, \@DEFAULT_RSYNC_ARGS);
@@ -211,10 +211,10 @@ sub set_ownership {
     my ($config) = @_;
 
     if (my $path = $config->{path}
-      and my $hostname = $config->{hostname}
-      and my $username = $config->{username}
+      and my $host = $config->{host}
+      and my $user = $config->{user}
       and my $group = $config->{group}) {
-        system('ssh', $hostname, '-l', $username, 'find', $path, '-print0', '|', 'xargs', '-0', 'chown', "$username:$group");
+        system('ssh', $host, '-l', $user, 'find', $path, '-print0', '|', 'xargs', '-0', 'chown', "$user:$group");
     }
 }
 
