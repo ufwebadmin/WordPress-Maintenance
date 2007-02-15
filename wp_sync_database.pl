@@ -66,6 +66,10 @@ sub sync_database {
     my ($from_config, $to_config) = @_;
 
     my $dump = dump_database($from_config);
+    if ($from_config->{database}->{dump_encoding} ne $to_config->{database}->{dump_encoding}) {
+        $dump = "SET NAMES $from_config->{database}->{dump_encoding};\n\n";
+    }
+
     load_database($to_config, $dump);
     update_options($to_config);
 }
