@@ -16,6 +16,8 @@ requires 'POSIX';
 requires 'Template';
 requires 'URI';
 
+build_requires 'Test::More';
+
 install_script glob('script/*.pl');
 install_share 'share';
 
