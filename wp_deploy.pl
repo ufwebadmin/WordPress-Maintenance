@@ -103,8 +103,8 @@ sub stage {
     for (qw(wp-cache uf-url-cache)) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
-        if ($config->{group} and not $config->{user}) {
-            system('chgrp', $config->{group}, $directory);
+        if (my $server_group = $config->{server_group}) {
+            system('chgrp', $server_group, $directory);
             chmod 0771, $directory;
         }
     }
@@ -210,11 +210,27 @@ sub deploy {
 sub set_ownership {
     my ($config) = @_;
 
-    if (my $path = $config->{path}
-      and my $host = $config->{host}
-      and my $user = $config->{user}
-      and my $group = $config->{group}) {
-        system('ssh', $host, '-l', $user, 'find', $path, '-print0', '|', 'xargs', '-0', 'chown', "$user:$group");
+    my $path = $config->{path};
+    if (my $group = $config->{group}) {
+        my @cmd = ('find', $path);
+
+        # XXX: Don't reset permissions on wp-cache et al
+        if (my $server_group = $config->{server_group}) {
+            push @cmd, '-not', '-group', $server_group;
+        }
+
+        push @cmd, '-exec';
+        if (my $user = $config->{user}) {
+            push @cmd, 'chown', "$user:$group";
+            unshift @cmd, 'ssh', $config->{host}, '-l', $user
+                if $config->{host};
+        }
+        else {
+            push @cmd, 'chgrp', $group;
+        }
+        push @cmd, '{}', ';';
+
+        system(@cmd);
     }
 }
 
