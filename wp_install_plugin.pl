@@ -22,7 +22,7 @@ main(@ARGV);
 sub main {
     my ($plugin_uri, $wordpress_root) = @_;
 
-    die "$0 PLUGIN_URL WORDPRESS_ROOT\n"
+    die "$0 PLUGIN_URI WORDPRESS_ROOT\n"
         unless $plugin_uri and $wordpress_root;
 
     if ($plugin_uri !~ /:\/\//) {
