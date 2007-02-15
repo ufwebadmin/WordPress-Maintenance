@@ -1,0 +1,31 @@
+# Version control files and directories
+\bRCS\b
+\bCVS\b
+,v$
+\B\.svn\b
+
+# MakeMaker-generated files and directories
+^MANIFEST\.
+^MakeMaker-\d
+^Makefile$
+\bblib\b
+\bpm_to_blib\b
+
+# Module::Build-generated files and directories
+^Build$
+\b_build\b
+
+# Devel::Cover-generated files and directories
+\bcover_db\b
+
+# Backup and temporary files
+~$
+\.tmp$
+\.old$
+\.bak$
+\#$
+\.#
+
+# Runtime files and directories
+_local.yml$
+\bdocuments\b
