@@ -77,26 +77,7 @@ sub dump_database {
 
     my ($fh, $dump_file) = tempfile(UNLINK => 1);
 
-    my @args = (
-        'mysqldump',
-        '--host=' . $config->{database}->{hostname},
-        '--port=' . $config->{database}->{port},
-        '--user=' . $config->{database}->{username},
-        '--password=' . $config->{database}->{password},
-        '--add-drop-table',
-        '--extended-insert',
-        $config->{database}->{name},
-        "> $dump_file",
-    );
-
-    if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
-        unshift @args, 'ssh', $hostname, '-l', $username;
-    }
-
-    push @args
-
-    print Dumper \@args;
-    system(@args);
+    run_mysql_command('mysqldump', $config, [ '--add-drop-table', '--extended-insert', $config->{database}->{name}, "> $dump_file" ]);
 
     return $dump_file;
 }
@@ -104,22 +85,7 @@ sub dump_database {
 sub load_database {
     my ($config, $dump_file) = @_;
 
-    my @args = (
-        'mysql',
-        '--host=' . $config->{database}->{hostname},
-        '--port=' . $config->{database}->{port},
-        '--user=' . $config->{database}->{username},
-        '--password=' . $config->{database}->{password},
-        $config->{database}->{name},
-        "< $dump_file",
-    );
-
-    if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
-        unshift @args, 'ssh', $hostname, '-l', $username;
-    }
-
-    print Dumper \@args;
-    system(@args);
+    run_mysql_command('mysql', $config, [ $config->{database}->{name}, "< $dump_file" ]);
 }
 
 sub update_options {
@@ -142,15 +108,21 @@ sub update_options {
         print $fh "UPDATE wp_options SET option_value = '$option_value' WHERE option_name = '$option_name';\n";
     }
 
+    run_mysql_command('mysql', $config, [ $config->{database}->{name}, "< $options_file" ]);
+}
+
+sub run_mysql_command {
+    my ($command, $config, $args) = @_;
+
     my @args = (
-        'mysql',
+        $command,
         '--host=' . $config->{database}->{hostname},
-        '--port=' . $config->{database}->{port},
         '--user=' . $config->{database}->{username},
         '--password=' . $config->{database}->{password},
-        $config->{database}->{name},
-        "< $options_file",
     );
+
+    push @args, '--port=' . $config->{database}->{port} if $config->{database}->{port};
+    push @args, @$args;
 
     if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
         unshift @args, 'ssh', $hostname, '-l', $username;
