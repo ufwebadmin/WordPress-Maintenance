@@ -83,7 +83,7 @@ WordPress::Maintenance::Executables - List WordPress-related files which need ex
 
 =head1 SYNOPSIS
 
-    use WordPres::Executables;
+    use WordPress::Maintenance::Executables;
 
     # Just those in the WordPress root
     print join ', ', @WordPress::Maintenance::Executables::ROOT;

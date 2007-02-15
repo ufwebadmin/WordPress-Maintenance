@@ -25,7 +25,7 @@ WordPress::Maintenance::Config - Load configuration for a WordPress instance
 
 =head1 SYNOPSIS
 
-    use WordPres::Config;
+    use WordPress::Maintenance::Config;
 
     my $config = WordPress::Maintenance::Config->new;
     my $environment_config = $config->for_environment('dev');

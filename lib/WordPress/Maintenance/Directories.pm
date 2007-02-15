@@ -28,7 +28,7 @@ WordPress::Maintenance::Directories - List WordPress-related directories
 
 =head1 SYNOPSIS
 
-    use WordPres::Directories;
+    use WordPress::Maintenance::Directories;
 
     # Just those required by plugins in the default UF WordPress install
     print join ', ', @WordPress::Maintenance::Directories::PLUGIN;
