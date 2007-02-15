@@ -166,12 +166,22 @@ sub deploy {
 
     my $target = $config->{path};
     if (my $username = $config->{username} and my $hostname = $config->{hostname}) {
-        $target = "${username}@${hostname}:${target}";
+        $target = $username . '@' . $hostname . ':' . $target;
     }
 
     copy($stage_directory, $target, \@DEFAULT_RSYNC_ARGS);
-    if (my $username = $config->{username} and my $group = $config->{group}) {
-        system('ssh', $config->{hostname}, '-l', $username, 'find', $config->{path}, '-print0', '|', 'xargs', '-0', 'chown', "$username:$group");
+    set_ownership($config);
+}
+
+# Fix ownership for suEXEC
+sub set_ownership {
+    my ($config) = @_;
+
+    if (my $path = $config->{path}
+      and my $hostname = $config->{hostname}
+      and my $username = $config->{username}
+      and my $group = $config->{group}) {
+        system('ssh', $hostname, '-l', $username, 'find', $path, '-print0', '|', 'xargs', '-0', 'chown', "$username:$group");
     }
 }
 
