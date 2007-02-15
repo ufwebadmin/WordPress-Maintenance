@@ -102,7 +102,6 @@ sub stage {
     my $wp_content_directory = File::Spec->join($stage_directory, 'wp-content');
 
     # Add plugin directories
-    # TODO: Refactor
     for (qw(wp-cache uf-url-cache)) {
         my $directory = File::Spec->join($wp_content_directory, $_);
         mkdir $directory;
@@ -113,7 +112,6 @@ sub stage {
     }
 
     # Add wp-cache symbolic link
-    # TODO: Refactor
     my $cwd = Cwd::getcwd();
     chdir $wp_content_directory;
     symlink
@@ -122,7 +120,6 @@ sub stage {
     chdir $cwd;
 
     # Add robots.txt if requested
-    # TODO: Refactor
     if ($config->{exclude_robots}) {
         open my $fh, '>', File::Spec->join($stage_directory, 'robots.txt') or die $!;
         print $fh "User-agent: *\nDisallow: /\n";
@@ -184,7 +181,6 @@ sub add_shebang {
         my $content = do { local $/; <$fh> };
         close $fh;
 
-        # Add the shebang
         open $fh, '>', $executable or die "Error opening $executable: $!";
         print $fh $shebang, "\n", $content;
         close $fh;
@@ -194,6 +190,7 @@ sub add_shebang {
 sub make_executable {
     my ($executables) = @_;
 
+    # suEXEC at OSG requires 0755
     chmod 0755, grep { -f } @$executables;
 }
 
@@ -209,7 +206,6 @@ sub deploy {
     set_ownership($config);
 }
 
-# Fix ownership for suEXEC
 sub set_ownership {
     my ($config) = @_;
 
