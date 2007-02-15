@@ -26,7 +26,6 @@ our @DEFAULT_RSYNC_ARGS = qw(
     --delete-after
 );
 our @DEFAULT_RSYNC_EXCLUDES = qw(
-    .svn/
     /license.txt
     /readme.html
     /wp-config-sample.php
@@ -42,10 +41,12 @@ sub main {
     my $source_directory = File::Spec->curdir;
     my $environment = 'dev';
     my $template_directory = File::Spec->join($FindBin::Bin, 'templates');
+    my $checkout = 0;
     die usage() unless GetOptions(
         'source|src|s=s'      => \$source_directory,
         'environment|env|e=s' => \$environment,
         'templates|t=s'       => \$template_directory,
+        'checkout|C'          => \$checkout,
     );
 
     die "Directory ($template_directory) does not exist"
@@ -64,7 +65,7 @@ sub main {
         unless $config->{$environment};
 
     my $stage_directory = tempdir(CLEANUP => 1);
-    stage($www_directory, $config->{$environment}, \@users, $template_directory, $stage_directory);
+    stage($www_directory, $config->{$environment}, \@users, $template_directory, $stage_directory, $checkout);
     deploy($stage_directory, $config->{$environment});
 }
 
@@ -82,13 +83,14 @@ Available options:
   -e, --environment    The environment to deploy (dev, test, prod)
   -t, --templates      The path to the directory containing configuration file
                        templates
+  -C, --checkout       Keep svn checkout data when deploying
 END_OF_USAGE
 }
 
 sub stage {
-    my ($www_directory, $config, $users, $template_directory, $stage_directory) = @_;
+    my ($www_directory, $config, $users, $template_directory, $stage_directory, $checkout) = @_;
 
-    stage_wordpress($www_directory, $stage_directory);
+    stage_wordpress($www_directory, $stage_directory, $checkout);
     stage_configuration($config, $users, $template_directory, $stage_directory);
 
     if (my $shebang = $config->{shebang}) {
@@ -130,9 +132,12 @@ sub stage {
 }
 
 sub stage_wordpress {
-    my ($www_directory, $stage_directory) = @_;
+    my ($www_directory, $stage_directory, $checkout) = @_;
 
     my @excludes = @DEFAULT_RSYNC_EXCLUDES;
+    unless ($checkout) {
+        push @excludes, '.svn/';
+    }
 
     my @args = @DEFAULT_RSYNC_ARGS;
     push @args, ('--exclude', $_) for @excludes;
@@ -178,7 +183,7 @@ sub add_shebang {
 
         # Add the shebang
         open my $fh, '>', $executable or die "Error opening $executable: $!";
-        print $fh $shebang . "\n" . $content;
+        print $fh $shebang, "\n", $content;
         close $fh;
     }
 }
