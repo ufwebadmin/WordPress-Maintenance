@@ -102,7 +102,9 @@ sub update_options {
 
     my $options = '';
     foreach my $option_name (keys %options) {
-        my $option_value = $options{$option_name} || '';
+        my $option_value = defined $options{$option_name}
+            ? $options{$option_name}
+            : '';
         $option_value =~ s/__URI__/$uri/g;
 
         $options .= "UPDATE wp_options SET option_value = '$option_value' WHERE option_name = '$option_name';\n";
