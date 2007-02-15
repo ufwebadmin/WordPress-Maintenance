@@ -7,6 +7,10 @@ use Data::Dumper;
 use File::Spec;
 use File::Temp qw(tempfile);
 use Getopt::Long;
+use IO::Select;
+use IPC::Open3;
+use Net::SSH qw(ssh_cmd);
+use POSIX qw(:sys_wait_h);
 use URI;
 use YAML ();
 
@@ -67,25 +71,23 @@ END_OF_USAGE
 sub sync_database {
     my ($from_config, $to_config) = @_;
 
-    my $dump_file = dump_database($from_config);
-    load_database($to_config, $dump_file);
+    my $dump = dump_database($from_config);
+    load_database($to_config, $dump);
     update_options($to_config);
 }
 
 sub dump_database {
     my ($config) = @_;
 
-    my ($fh, $dump_file) = tempfile(UNLINK => 1);
+    my $output = run_mysql_command('mysqldump', $config, [ '--add-drop-table', '--extended-insert' ]);
 
-    run_mysql_command('mysqldump', $config, [ '--add-drop-table', '--extended-insert', $config->{database}->{name}, "> $dump_file" ]);
-
-    return $dump_file;
+    return $output;
 }
 
 sub load_database {
-    my ($config, $dump_file) = @_;
+    my ($config, $dump) = @_;
 
-    run_mysql_command('mysql', $config, [ $config->{database}->{name}, "< $dump_file" ]);
+    run_mysql_command('mysql', $config, [], $dump);
 }
 
 sub update_options {
@@ -100,34 +102,86 @@ sub update_options {
     my $uri = URI->new($config->{uri});
     $uri =~ s/\/$//;
 
-    my ($fh, $options_file) = tempfile(UNLINK => 1);
+    my $options = '';
     foreach my $option_name (keys %options) {
         my $option_value = $options{$option_name};
         $option_value =~ s/__URI__/$uri/g;
 
-        print $fh "UPDATE wp_options SET option_value = '$option_value' WHERE option_name = '$option_name';\n";
+        $options .= "UPDATE wp_options SET option_value = '$option_value' WHERE option_name = '$option_name';\n";
     }
 
-    run_mysql_command('mysql', $config, [ $config->{database}->{name}, "< $options_file" ]);
+    run_mysql_command('mysql', $config, [], $options);
 }
 
 sub run_mysql_command {
-    my ($command, $config, $args) = @_;
+    my ($command, $config, $args, $input) = @_;
 
-    my @args = (
-        $command,
-        '--host=' . $config->{database}->{hostname},
-        '--user=' . $config->{database}->{username},
-        '--password=' . $config->{database}->{password},
-    );
+    my @args;
+    foreach my $option (qw/host port user password/) {
+        push @args, "--${option}=" . $config->{database}->{$option}
+            if $config->{database}->{$option};
+    }
+    push @args, @$args if ref $args and ref $args eq 'ARRAY';
+    push @args, $config->{database}->{name};
+    print Dumper \@args;
 
-    push @args, '--port=' . $config->{database}->{port} if $config->{database}->{port};
-    push @args, @$args;
-
-    if (my $hostname = $config->{hostname} and my $username = $config->{username}) {
-        unshift @args, 'ssh', $hostname, '-l', $username;
+    my $output;
+    if (my $host = $config->{host} and my $user = $config->{user}) {
+        $output = ssh_cmd({
+            user    => $user,
+            host    => $host,
+            command => $command,
+            args    => \@args,
+        });
+    }
+    else {
+        $output = run_local_command($command, \@args, $input);
     }
 
-    print Dumper \@args;
-    system(@args);
+    return $output;
+}
+
+sub run_local_command {
+    my ($command, $args, $input) = @_;
+
+    $args ||= [];
+
+    my $in  = IO::File->new;
+    my $out = IO::File->new;
+    my $err = IO::File->new;
+
+    my $pid = open3($in, $out, $err, $command, @$args);
+    print $in $input if defined $input;
+    close $in;
+
+    my $select = IO::Select->new;
+    $select->add($_) for $out, $err;
+
+    my $output = '';
+    my $error  = '';
+    while ($select->count) {
+        my @handles = $select->can_read;
+        foreach my $handle (@handles) {
+            my $buffer = '';
+            my $bytes = sysread($handle, $buffer, 4096);
+
+            unless (defined($bytes)) {
+                waitpid $pid, WNOHANG;
+                die $!;
+            }
+
+            $select->remove($handle) unless $bytes;
+            if ($handle eq $out) {
+                $output .= $buffer;
+            }
+            elsif ($handle eq $err) {
+                $error .= $buffer;
+            }
+        }
+    }
+
+    waitpid $pid, 0;
+    croak $error if $error;
+
+    return $output;
 }
