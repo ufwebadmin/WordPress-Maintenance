@@ -1,4 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.02
+        - Fix File::ShareDir usage to use module_dir instead of
+          dist_dir, since dist_dir includes the architecture
+          (i686-linux)
+
 0.01  Thu Feb 15 18:53:42 EST 2007
         - Initial revision

@@ -4,11 +4,12 @@ use strict;
 use warnings;
 use Carp;
 use File::Find ();
-use File::ShareDir qw(dist_dir);
+use File::ShareDir qw(module_dir);
 use File::Spec;
 use File::Temp qw(tempdir);
 use Getopt::Long;
 use Template;
+use WordPress::Maintenance;
 use WordPress::Maintenance::Config;
 use WordPress::Maintenance::Directories;
 use WordPress::Maintenance::Executables;
@@ -42,7 +43,7 @@ main(@ARGV);
 sub main {
     my $source_directory   = File::Spec->curdir;
     my $environment        = 'dev';
-    my $template_directory = dist_dir('WordPress::Maintenance');
+    my $template_directory = module_dir('WordPress::Maintenance');
     my $checkout           = 0;
     die usage() unless GetOptions(
         'source|src|s=s'      => \$source_directory,
