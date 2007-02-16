@@ -33,11 +33,14 @@ sub main {
     my $source_directory = File::Spec->curdir;
     my $from             = 'prod';
     my $to               = 'dev';
+    my $help             = 0;
     die usage() unless GetOptions(
         'source|src|s=s' => \$source_directory,
         'from|f=s'       => \$from,
         'to|t=s'         => \$to,
+        'help|h'         => \$help,
     );
+    print usage() and exit() if $help;
 
     my $config = WordPress::Maintenance::Config->new($source_directory);
     sync_database($config->for_environment($from), $config->for_environment($to));
@@ -56,6 +59,7 @@ Available options:
   -s, --source         The path to the site SVN checkout
   -f, --from           The environment to sync from
   -t, --to             The environment to sync to
+  -h, --help           Print this help screen and exit
 END_OF_USAGE
 }
 

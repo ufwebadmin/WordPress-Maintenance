@@ -45,12 +45,15 @@ sub main {
     my $environment        = 'dev';
     my $template_directory = module_dir('WordPress::Maintenance');
     my $checkout           = 0;
+    my $help               = 0;
     die usage() unless GetOptions(
         'source|src|s=s'      => \$source_directory,
         'environment|env|e=s' => \$environment,
         'templates|t=s'       => \$template_directory,
         'checkout|C'          => \$checkout,
+        'help|h'              => \$help,
     );
+    print usage() and exit() if $help;
 
     die "Directory ($template_directory) does not exist"
         unless -d $template_directory;
@@ -83,6 +86,7 @@ Available options:
   -t, --templates      The path to the directory containing configuration file
                        templates
   -C, --checkout       Keep SVN checkout data when deploying
+  -h, --help           Print this help screen and exit
 END_OF_USAGE
 }
 
