@@ -1,4 +1,4 @@
-<FilesMatch ^(my-hacks|wp|wp-(atom|blog-header|comments.*|config|feed|links-opml|mail|pass|rdf|register|rss2?|settings|trackback)|xmlrpc)\.php$>
+<FilesMatch ^(my-hacks|wp|wp-(atom|blog-header[% UNLESS allow_comments %]|comments.*[% END %]|config|feed|links-opml|mail|pass|rdf|register|rss2?|settings|trackback)|xmlrpc)\.php$>
   Deny from all
 </FilesMatch>
 [% IF gatorlink_auth -%]

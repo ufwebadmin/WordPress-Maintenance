@@ -9,6 +9,7 @@ use YAML ();
 
 our $DEFAULT_CONFIG_FILENAME = 'config.yml';
 our $DEFAULT_CONFIG = {
+    allow_comments => 0,
     wordpress => {
         wp_cache => {
             acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
