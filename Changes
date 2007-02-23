@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.04
+0.04  Thu Feb 22 20:42:12 EST 2007
         - Add a new configuration option, allow_comments
 
 0.03  Thu Feb 15 19:18:50 EST 2007
