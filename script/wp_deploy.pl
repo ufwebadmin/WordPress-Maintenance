@@ -157,7 +157,7 @@ sub stage_configuration {
     File::Find::find(sub {
         return if -d $File::Find::name;
         return if $File::Find::dir =~ /\B\.svn\b/;
-        return if $File::Find::dir =~ /\Bmint\b/
+        return if $File::Find::dir =~ /\bmint\b/
             and not -d File::Spec->join($stage_directory, $WordPress::Maintenance::Directories::MINT);
 
         my $relative = File::Spec->abs2rel($File::Find::name, $template_directory);

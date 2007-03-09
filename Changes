@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.05
+        - Fix exclude on configuration staging for sites which don't
+          use Mint
+
 0.04  Thu Feb 22 20:42:12 EST 2007
         - Add a new configuration option, allow_comments
 
