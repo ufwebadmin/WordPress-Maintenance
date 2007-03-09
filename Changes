@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.05
+0.05  Thu Mar  8 19:27:41 EST 2007
         - Fix exclude on configuration staging for sites which don't
           use Mint
 
