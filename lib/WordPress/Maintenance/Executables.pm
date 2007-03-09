@@ -7,19 +7,12 @@ use WordPress::Maintenance::Directories;
 
 our @ROOT = qw(
     index.php
-    wp-atom.php
     wp-comments-post.php
-    wp-commentsrss2.php
-    wp-feed.php
     wp-links-opml.php
     wp-login.php
     wp-mail.php
     wp-pass.php
-    wp-rdf.php
     wp-register.php
-    wp-rss2.php
-    wp-rss.php
-    wp-trackback.php
     xmlrpc.php
 );
 
