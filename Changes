@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.06
+0.06  Thu Mar  8 19:52:12 EST 2007
         - Remove feed files (e.g. wp-rss2.php) from executable list
           to avoid shebang on output (the request is rewritten through
           index.php)
