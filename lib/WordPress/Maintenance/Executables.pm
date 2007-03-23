@@ -16,6 +16,10 @@ our @ROOT = qw(
     xmlrpc.php
 );
 
+our @INCLUDES = (
+    File::Spec->join(qw/js tinymce tiny_mce_gzip.php/),
+);
+
 our @ADMIN = qw(
     bookmarklet.php
     categories.php
@@ -24,6 +28,7 @@ our @ADMIN = qw(
     edit-form-ajax-cat.php
     edit-pages.php
     edit.php
+    execute-pings.php
     import.php
     index.php
     inline-uploading.php
@@ -66,6 +71,7 @@ our @MINT = (
 
 our @ALL = (
     @ROOT,
+    (map { File::Spec->join($WordPress::Maintenance::Directories::INCLUDES, $_) } @INCLUDES),
     (map { File::Spec->join($WordPress::Maintenance::Directories::ADMIN, $_) } @ADMIN),
     (map { File::Spec->join($WordPress::Maintenance::Directories::MINT, $_) } @MINT),
 );
@@ -80,6 +86,9 @@ WordPress::Maintenance::Executables - List WordPress-related files which need ex
 
     # Just those in the WordPress root
     print join ', ', @WordPress::Maintenance::Executables::ROOT;
+
+    # Just those in wp-includes
+    print join ', ', @WordPress::Maintenance::Executables::INCLUDES;
 
     # Just those in wp-admin
     print join ', ', @WordPress::Maintenance::Executables::ADMIN;
