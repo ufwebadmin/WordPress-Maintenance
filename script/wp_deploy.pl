@@ -199,7 +199,7 @@ sub deploy {
         $target = $user . '@' . $host . ':' . $target;
     }
 
-    copy($stage_directory, $target, \@DEFAULT_RSYNC_ARGS);
+    copy($stage_directory, $target, [ @DEFAULT_RSYNC_ARGS, '--exclude', '/wp-content/uploads/' ]);
     set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
 
     if (my $server_group = $config->{server_group}) {
