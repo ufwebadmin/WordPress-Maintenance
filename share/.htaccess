@@ -17,6 +17,13 @@
 
   # Point /admin to /wp-admin/
   RewriteRule ^admin(/(.*))?$ wp-admin/$2 [QSA,L,R=permanent]
+
+  # Redirect to the canonical host
+[% matches = uri.match('^http://([^/]+)') -%]
+[% host = matches.0 -%]
+  RewriteCond %{HTTP_HOST} !^[% host.replace('\.', '\\.') %] [NC]
+  RewriteCond %{HTTP_HOST} !^$
+  RewriteRule ^(.*) [% uri %][% base %]$1 [L,R=permanent]
 </IfModule>
 
 # BEGIN WordPress
