@@ -19,7 +19,6 @@ use WordPress::Maintenance::Config;
 ##
 
 my %DEFAULT_WORDPRESS_OPTIONS = (
-    # siteurl and home *should* be handled in update_uris_and_paths, but let's be sure
     siteurl                        => '__URI__',
     home                           => '__URI__',
     http_authentication_logout_uri => 'http://login.gatorlink.ufl.edu/quit.cgi?__URI__',
@@ -76,7 +75,6 @@ sub sync_database {
         $dump = "SET NAMES $from_config->{database}->{dump_encoding};\n\n$dump";
     }
 
-    $dump = update_uris_and_paths($from_config, $to_config, $dump);
     sync_uploads($from_config, $to_config) unless $skip_uploads;
     load_database($to_config, $dump);
     update_options($to_config);
@@ -88,15 +86,6 @@ sub dump_database {
     my $output = run_mysql_command('mysqldump', $config, [ '--add-drop-table', '--extended-insert' ]);
 
     return $output;
-}
-
-sub update_uris_and_paths {
-    my ($from_config, $to_config, $dump) = @_;
-
-    $dump =~ s/$from_config->{uri}/$to_config->{uri}/g;
-    $dump =~ s/$from_config->{path}/$to_config->{path}/g;
-
-    return $dump;
 }
 
 sub sync_uploads {
