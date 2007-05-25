@@ -1,5 +1,8 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.09
+        - Add support for synchronizing /wp-content/uploads/
+
 0.08  Fri Apr 27 19:23:57 EDT 2007
         - Exclude /wp-content/uploads/ on deploy so it isn't deleted
 

@@ -66,7 +66,7 @@ sub main {
     my $environment_config = $config->for_environment($environment);
     exists $environment_config->{gatorlink_auth} or $environment_config->{gatorlink_auth} = 1;
 
-    my $stage_directory = tempdir(CLEANUP => 1);
+    my $stage_directory = tempdir(CLEANUP => 0);
     stage($www_directory, $environment_config, $config->users, $template_directory, $stage_directory, $checkout);
     deploy($stage_directory, $environment_config);
 }
@@ -102,15 +102,15 @@ sub stage {
         make_executable(\@executables);
     }
 
-    my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Maintenance::Directories::CONTENT);
-
-    # Add plugin directories
-    for (@WordPress::Maintenance::Directories::PLUGIN) {
-        my $directory = File::Spec->join($wp_content_directory, $_);
+    # Add writable directories; ownership handled post-deploy for permissions
+    for (@WordPress::Maintenance::Directories::WRITABLE) {
+        my $directory = File::Spec->join($stage_directory, $_);
         mkdir $directory;
     }
 
     # Add wp-cache symbolic link
+    my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Maintenance::Directories::CONTENT);
+
     my $cwd = Cwd::getcwd();
     chdir $wp_content_directory;
     symlink
@@ -137,7 +137,7 @@ sub stage_wordpress {
     my @args = @DEFAULT_RSYNC_ARGS;
     push @args, ('--exclude', $_) for @excludes;
 
-    copy($www_directory, $stage_directory, \@args);
+    WordPress::Maintenance::copy($www_directory, $stage_directory, \@args);
 }
 
 sub stage_configuration {
@@ -194,51 +194,19 @@ sub make_executable {
 sub deploy {
     my ($stage_directory, $config) = @_;
 
-    my $target = $config->{path};
-    if (my $host = $config->{host} and my $user = $config->{user}) {
-        $target = $user . '@' . $host . ':' . $target;
-    }
-
-    copy($stage_directory, $target, [ @DEFAULT_RSYNC_ARGS, '--exclude', '/wp-content/uploads/' ]);
-    set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
-
-    if (my $server_group = $config->{server_group}) {
-        for (@WordPress::Maintenance::Directories::PLUGIN) {
-            my $directory = File::Spec->join($config->{path}, $WordPress::Maintenance::Directories::CONTENT, $_);
-            set_ownership($directory, $config->{user}, $server_group, $config->{host});
-        }
-    }
-}
-
-sub set_ownership {
-    my ($path, $user, $group, $host) = @_;
-
-    return unless $group;
-
-    my @cmd = ('chgrp', '-R', $group);
-    if ($user) {
-        @cmd = ('chown', '-R', "$user:$group");
-    }
-
-    push @cmd, $path;
-
-    if ($host) {
-        unshift @cmd, 'ssh', $host, '-l', $user;
-    }
-
-    system(@cmd);
-}
-
-sub copy {
-    my ($sources, $destination, $args) = @_;
-
-    my $ref = ref $sources;
-    $sources = [ $sources ] unless $ref and $ref eq 'ARRAY';
-
-    my @args = (
-        @$args,
-        map { "$_/" } @$sources, $destination,
+    my $uploads_path = join('/',
+        $WordPress::Maintenance::Directories::CONTENT,
+        $WordPress::Maintenance::Directories::UPLOADS
     );
 
-    system('rsync', @args);
+    my $target = WordPress::Maintenance::rsync_target($config);
+    WordPress::Maintenance::copy($stage_directory, $target, [ @DEFAULT_RSYNC_ARGS, "--filter", "P /${uploads_path}/*" ]);
+    WordPress::Maintenance::set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
+
+    if (my $server_group = $config->{server_group}) {
+        for (@WordPress::Maintenance::Directories::WRITABLE) {
+            my $directory = File::Spec->join($config->{path}, $_);
+            WordPress::Maintenance::set_ownership($directory, $config->{user}, $server_group, $config->{host});
+        }
+    }
 }

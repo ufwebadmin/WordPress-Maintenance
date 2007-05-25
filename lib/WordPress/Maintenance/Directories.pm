@@ -8,10 +8,15 @@ our $ADMIN = 'wp-admin';
 our $CONTENT = 'wp-content';
 our $INCLUDES = 'wp-includes';
 our $MINT = 'mint';
+our $UPLOADS = 'uploads';
 
 our @PLUGIN = qw(
     uf-url-cache
     wp-cache
+);
+
+our @WRITABLE = (
+    map { File::Spec->join($CONTENT, $_) } (@PLUGIN, $UPLOADS),
 );
 
 our @ALL = (
@@ -19,7 +24,7 @@ our @ALL = (
     $CONTENT,
     $INCLUDES,
     $MINT,
-    map { File::Spec->join($CONTENT, $_) } @PLUGIN,
+    @WRITABLE,
 );
 
 =head1 NAME
@@ -38,6 +43,10 @@ WordPress::Maintenance::Directories - List WordPress-related directories
     print $WordPress::Maintenance::Directories::CONTENT;
     print $WordPress::Maintenance::Directories::INCLUDES;
     print $WordPress::Maintenance::Directories::MINT;
+    print $WordPress::Maintenance::Directories::UPLOADS;
+
+    # All of the above that need to be writable by the Web server
+    print join ', ', @WordPress::Maintenance::Directories::WRITABLE;
 
     # All of the above
     print join ', ', @WordPress::Maintenance::Directories::ALL;

@@ -3,7 +3,7 @@ package WordPress::Maintenance;
 use strict;
 use warnings;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -14,6 +14,72 @@ WordPress::Maintenance - Configuration and file maintenance for WordPress instan
 A collection of scripts for maintaining WordPress instances in a
 high-availablity environment.  Via a configuration file, a WordPress
 instance can be deployed with a single command.
+
+=head1 METHODS
+
+=head2 copy
+
+Copy from the specified directory to the specified target using
+C<rsync(1)>.
+
+=cut
+
+sub copy {
+    my ($sources, $destination, $args) = @_;
+
+    my $ref = ref $sources;
+    $sources = [ $sources ] unless $ref and $ref eq 'ARRAY';
+
+    my @args = (
+        @{ $args || [] },
+        map { "$_/" } @$sources, $destination,
+    );
+
+    system('rsync', @args);
+}
+
+=head2 set_ownership
+
+Set the ownership - locally or remotely - for the WordPress instance.
+
+=cut
+
+sub set_ownership {
+    my ($path, $user, $group, $host) = @_;
+
+    return unless $group;
+
+    my @cmd = ('chgrp', '-R', $group);
+    if ($user) {
+        @cmd = ('chown', '-R', "$user:$group");
+    }
+
+    push @cmd, $path;
+
+    if ($host) {
+        unshift @cmd, 'ssh', $host, '-l', $user;
+    }
+
+    system(@cmd);
+}
+
+=head2 rsync_target
+
+From the specified configuration hash, return a string appropriate for
+use as an C<rsync(1)> target.
+
+=cut
+
+sub rsync_target {
+    my ($config) = @_;
+
+    my $target = $config->{path};
+    if (my $host = $config->{host} and my $user = $config->{user}) {
+        $target = $user . '@' . $host . ':' . $target;
+    }
+
+    return $target;
+}
 
 =head1 SEE ALSO
 
