@@ -5,6 +5,16 @@ use warnings;
 
 our $VERSION = '0.09';
 
+our @DEFAULT_RSYNC_ARGS = qw(
+    --archive
+    --verbose
+    --compress
+    --delete-after
+    --no-perms
+    --no-group
+    --chmod=ugo=rwX
+);
+
 =head1 NAME
 
 WordPress::Maintenance - Configuration and file maintenance for WordPress instances

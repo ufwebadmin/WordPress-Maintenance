@@ -19,15 +19,6 @@ use WordPress::Maintenance::Executables;
 ## Globals
 ##
 
-our @DEFAULT_RSYNC_ARGS = qw(
-    --archive
-    --verbose
-    --compress
-    --delete-after
-    --no-perms
-    --no-group
-    --chmod=ugo=rwX
-);
 our @DEFAULT_RSYNC_EXCLUDES = qw(
     /license.txt
     /readme.html
@@ -134,7 +125,7 @@ sub stage_wordpress {
         push @excludes, '.svn/';
     }
 
-    my @args = @DEFAULT_RSYNC_ARGS;
+    my @args = @WordPress::Maintenance::DEFAULT_RSYNC_ARGS;
     push @args, ('--exclude', $_) for @excludes;
 
     WordPress::Maintenance::copy($www_directory, $stage_directory, \@args);
@@ -200,7 +191,7 @@ sub deploy {
     );
 
     my $target = WordPress::Maintenance::rsync_target($config);
-    WordPress::Maintenance::copy($stage_directory, $target, [ @DEFAULT_RSYNC_ARGS, "--filter", "P /${uploads_path}/*" ]);
+    WordPress::Maintenance::copy($stage_directory, $target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS, "--filter", "P /${uploads_path}/*" ]);
     WordPress::Maintenance::set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
 
     if (my $server_group = $config->{server_group}) {

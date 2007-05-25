@@ -18,16 +18,6 @@ use WordPress::Maintenance::Config;
 ## Globals
 ##
 
-our @DEFAULT_RSYNC_ARGS = qw(
-    --archive
-    --verbose
-    --compress
-    --delete-after
-    --no-perms
-    --no-group
-    --chmod=ugo=rwX
-);
-
 my %DEFAULT_WORDPRESS_OPTIONS = (
     # siteurl and home *should* be handled in update_uris_and_paths, but let's be sure
     siteurl                        => '__URI__',
@@ -123,7 +113,7 @@ sub sync_uploads {
     # Ensure wp-content/uploads exists at the destination
     run_command('mkdir', $to_config, [ '-p', File::Spec->join($to_config->{path}, @upload_path) ]);
 
-    WordPress::Maintenance::copy($from_target, $to_target, [ @DEFAULT_RSYNC_ARGS ]);
+    WordPress::Maintenance::copy($from_target, $to_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
     WordPress::Maintenance::set_ownership($to_config->{path}, $to_config->{user}, $to_config->{group}, $to_config->{host});
 }
 
