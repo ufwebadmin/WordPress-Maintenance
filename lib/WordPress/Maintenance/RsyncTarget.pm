@@ -5,7 +5,6 @@ use warnings;
 use base qw/Class::Accessor::Fast/;
 use overload
     '""' => \&as_string;
-use Class::C3;
 
 __PACKAGE__->mk_accessors(qw/path host user/);
 
