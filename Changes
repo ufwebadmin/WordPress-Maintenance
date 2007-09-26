@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.10
+        - wp_deploy.pl: Add option to disable cleanup of temporary
+          directory
+
 0.09  Fri May 25 16:34:47 EDT 2007
         - Add support for synchronizing /wp-content/uploads/
         - Add redirection to canonical host in .htaccess

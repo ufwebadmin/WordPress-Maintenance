@@ -3,7 +3,7 @@ package WordPress::Maintenance;
 use strict;
 use warnings;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10_01';
 
 our @DEFAULT_RSYNC_ARGS = qw(
     --archive
@@ -71,24 +71,6 @@ sub set_ownership {
     }
 
     system(@cmd);
-}
-
-=head2 rsync_target
-
-From the specified configuration hash, return a string appropriate for
-use as an C<rsync(1)> target.
-
-=cut
-
-sub rsync_target {
-    my ($config) = @_;
-
-    my $target = $config->{path};
-    if (my $host = $config->{host} and my $user = $config->{user}) {
-        $target = $user . '@' . $host . ':' . $target;
-    }
-
-    return $target;
 }
 
 =head1 SEE ALSO
