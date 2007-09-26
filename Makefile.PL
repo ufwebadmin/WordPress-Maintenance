@@ -6,6 +6,7 @@ name 'WordPress-Maintenance';
 all_from 'lib/WordPress/Maintenance.pm';
 
 requires 'Carp';
+requires 'Class::Accessor::Fast';
 requires 'File::Find';
 requires 'File::ShareDir';
 requires 'File::Spec';
