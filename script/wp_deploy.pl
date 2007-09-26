@@ -36,12 +36,14 @@ sub main {
     my $environment        = 'dev';
     my $template_directory = module_dir('WordPress::Maintenance');
     my $checkout           = 0;
+    my $cleanup            = 1;
     my $help               = 0;
     die usage() unless GetOptions(
         'source|src|s=s'      => \$source_directory,
         'environment|env|e=s' => \$environment,
         'templates|t=s'       => \$template_directory,
         'checkout|C'          => \$checkout,
+        'cleanup'             => \$cleanup,
         'help|h'              => \$help,
     );
     print usage() and exit() if $help;
@@ -57,7 +59,7 @@ sub main {
     my $environment_config = $config->for_environment($environment);
     exists $environment_config->{gatorlink_auth} or $environment_config->{gatorlink_auth} = 1;
 
-    my $stage_directory = tempdir(CLEANUP => 0);
+    my $stage_directory = tempdir(CLEANUP => $cleanup);
     stage($www_directory, $environment_config, $config->users, $template_directory, $stage_directory, $checkout);
     deploy($stage_directory, $environment_config);
 }
@@ -77,6 +79,8 @@ Available options:
   -t, --templates      The path to the directory containing configuration file
                        templates
   -C, --checkout       Keep SVN checkout data when deploying
+      --cleanup        Clean up temporary directory aftet deploying
+                       (default: on)
   -h, --help           Print this help screen and exit
 END_OF_USAGE
 }
