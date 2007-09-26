@@ -13,6 +13,7 @@ use WordPress::Maintenance;
 use WordPress::Maintenance::Config;
 use WordPress::Maintenance::Directories;
 use WordPress::Maintenance::Executables;
+use WordPress::Maintenance::RsyncTarget;
 
 
 ##
@@ -195,7 +196,7 @@ sub deploy {
         $WordPress::Maintenance::Directories::UPLOADS
     );
 
-    my $target = WordPress::Maintenance::rsync_target($config);
+    my $target = WordPress::Maintenance::RsyncTarget->new($config);
     WordPress::Maintenance::copy($stage_directory, $target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS, "--filter", "P /${uploads_path}/*" ]);
     WordPress::Maintenance::set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
 

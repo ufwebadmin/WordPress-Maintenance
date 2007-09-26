@@ -12,6 +12,7 @@ use POSIX qw(:sys_wait_h);
 use URI;
 use WordPress::Maintenance;
 use WordPress::Maintenance::Config;
+use WordPress::Maintenance::RsyncTarget;
 
 
 ##
@@ -93,10 +94,10 @@ sub sync_uploads {
 
     my @upload_path = qw/wp-content uploads/;
 
-    my $from_target = WordPress::Maintenance::rsync_target($from_config);
+    my $from_target = WordPress::Maintenance::RsyncTarget->new($from_config);
     $from_target = File::Spec->join($from_target, @upload_path);
 
-    my $to_target = WordPress::Maintenance::rsync_target($to_config);
+    my $to_target = WordPress::Maintenance::RsyncTarget->new($to_config);
     $to_target = File::Spec->join($to_target, @upload_path);
 
     # Ensure wp-content/uploads exists at the destination
