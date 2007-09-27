@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.10
+0.10  Wed Sep 26 20:20:23 EDT 2007
         - wp_deploy.pl: Add option to disable cleanup of temporary
           directory
         - Refactor rsync target calculation
