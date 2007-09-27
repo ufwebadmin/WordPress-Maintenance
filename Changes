@@ -4,6 +4,7 @@ This file documents the revision history for WordPress::Maintenance.
         - wp_deploy.pl: Add option to disable cleanup of temporary
           directory
         - Refactor rsync target calculation
+        - wp_sync_database.pl: Handle remote-to-remote rsync operations
 
 0.09  Fri May 25 16:34:47 EDT 2007
         - Add support for synchronizing /wp-content/uploads/

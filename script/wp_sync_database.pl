@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Carp;
 use File::Spec;
+use File::Temp qw(tempdir);
 use Getopt::Long;
 use IO::Select;
 use IPC::Open3;
@@ -99,6 +100,16 @@ sub sync_uploads {
 
     my $to_target = WordPress::Maintenance::RsyncTarget->new($to_config);
     $to_target = $to_target->subdirectory(@upload_path);
+
+    # Handle remote-to-remote rsync
+    if ($from_target->is_remote and $to_target->is_remote) {
+        my $path = tempdir(CLEANUP => 1);
+
+        my $tmp_target = WordPress::Maintenance::RsyncTarget->new({ path => $path });
+        WordPress::Maintenance::copy($from_target, $tmp_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
+
+        $from_target = $tmp_target;
+    }
 
     # Ensure wp-content/uploads exists at the destination
     run_command('mkdir', $to_config, [ '-p', File::Spec->join($to_config->{path}, @upload_path) ]);
