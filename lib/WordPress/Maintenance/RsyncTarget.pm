@@ -5,8 +5,9 @@ use warnings;
 use base qw/Class::Accessor::Fast/;
 use overload
     '""' => \&as_string;
+use File::Spec;
 
-__PACKAGE__->mk_accessors(qw/path host user/);
+__PACKAGE__->mk_accessors(qw/path user host/);
 
 =head1 NAME
 
@@ -24,6 +25,27 @@ WordPress::Maintenance::RsyncTarget - Target for deployment
 An C<rsync(1)> target for deploying a WordPress site.
 
 =head1 METHODS
+
+=head2 subdirectory
+
+Return a new L<WordPress::Maintenance::RsyncTarget> corresponding to
+the specified subdirectory of this target.
+
+    $target->subdirectory(qw/wp-content uploads/);
+
+=cut
+
+sub subdirectory {
+    my ($self, @path) = @_;
+
+    my $path = File::Spec->join($self->path, @path);
+
+    return WordPress::Maintenance::RsyncTarget->new({
+        path => $path,
+        user => $self->user,
+        host => $self->host,
+    });
+}
 
 =head2 is_remote
 

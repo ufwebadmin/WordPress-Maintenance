@@ -95,10 +95,10 @@ sub sync_uploads {
     my @upload_path = qw/wp-content uploads/;
 
     my $from_target = WordPress::Maintenance::RsyncTarget->new($from_config);
-    $from_target = File::Spec->join($from_target, @upload_path);
+    $from_target = $from_target->subdirectory(@upload_path);
 
     my $to_target = WordPress::Maintenance::RsyncTarget->new($to_config);
-    $to_target = File::Spec->join($to_target, @upload_path);
+    $to_target = $to_target->subdirectory(@upload_path);
 
     # Ensure wp-content/uploads exists at the destination
     run_command('mkdir', $to_config, [ '-p', File::Spec->join($to_config->{path}, @upload_path) ]);
