@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.11
+0.11  Mon Jun 23 11:17:52 EDT 2008
         - Switch from rsync --delete-after to rsync --delete due to
           protocol issues when talking to nersp
 
