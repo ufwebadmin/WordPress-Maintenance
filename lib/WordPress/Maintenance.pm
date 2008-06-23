@@ -3,13 +3,13 @@ package WordPress::Maintenance;
 use strict;
 use warnings;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11_01';
 
 our @DEFAULT_RSYNC_ARGS = qw(
     --archive
     --verbose
     --compress
-    --delete-after
+    --delete
     --no-perms
     --no-group
     --chmod=ugo=rwX

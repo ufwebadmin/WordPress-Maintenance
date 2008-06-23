@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.11
+        - Switch from rsync --delete-after to rsync --delete due to
+          protocol issues when talking to nersp
+
 0.10  Wed Sep 26 20:20:23 EDT 2007
         - wp_deploy.pl: Add option to disable cleanup of temporary
           directory
