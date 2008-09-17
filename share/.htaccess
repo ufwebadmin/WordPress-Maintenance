@@ -23,7 +23,7 @@
 [% host = matches.0 -%]
   RewriteCond %{HTTP_HOST} !^[% host.replace('\.', '\\.') %] [NC]
   RewriteCond %{HTTP_HOST} !^$
-  RewriteRule ^(.*) [% uri %][% base %]$1 [L,R=permanent]
+  RewriteRule ^(.*) [% uri %]/$1 [L,R=permanent]
 </IfModule>
 
 # BEGIN WordPress
