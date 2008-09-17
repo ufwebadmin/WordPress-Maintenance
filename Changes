@@ -3,6 +3,8 @@ This file documents the revision history for WordPress::Maintenance.
 0.12
         - The configured URI already contains the base, so append a
           slash instead
+        - Switch back to File::ShareDir::dist_dir due to changes in
+          Module::Install and File::ShareDir
 
 0.11  Mon Jun 23 11:17:52 EDT 2008
         - Switch from rsync --delete-after to rsync --delete due to
