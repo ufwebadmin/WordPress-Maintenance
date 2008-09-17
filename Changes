@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.12
+0.12  Wed Sep 17 15:22:59 EDT 2008
         - The configured URI already contains the base, so append a
           slash instead
         - Switch back to File::ShareDir::dist_dir due to changes in
