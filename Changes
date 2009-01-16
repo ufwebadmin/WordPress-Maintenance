@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.13
+0.13  Fri Jan 16 17:50:13 EST 2009
         - Add special case for mysql.osg.ufl.edu since the MySQL
           client on nersp cannot connect to it (#36)
 
