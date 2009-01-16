@@ -166,8 +166,11 @@ sub run_mysql_command {
 sub run_command {
     my ($command, $config, $args, $input) = @_;
 
+    # XXX: Special case for mysql.osg.ufl.edu, to which the MySQL client on nersp cannot connect
+    my $database_host = $config->{database}->{host};
+
     my $output;
-    if (my $host = $config->{host} and my $user = $config->{user}) {
+    if (my $host = $config->{host} and my $user = $config->{user} and $database_host ne 'mysql.osg.ufl.edu') {
         $output = run_remote_comamnd($user, $host, $command, $args, $input);
     }
     else {
