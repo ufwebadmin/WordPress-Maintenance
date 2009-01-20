@@ -160,17 +160,22 @@ sub run_mysql_command {
     push @args, @$args if ref $args and ref $args eq 'ARRAY';
     push @args, $config->{database}->{name};
 
-    return run_command($command, $config, \@args, $input);
+    # XXX: Special case for mysql.osg.ufl.edu, to which the MySQL client on nersp cannot connect
+    my $force_local_command = 0;
+    if ($config->{database}->{host} and $config->{database}->{host} eq 'mysql.osg.ufl.edu') {
+        $force_local_command = 1;
+    }
+
+    return run_command($command, $config, \@args, $input, $force_local_command);
 }
 
 sub run_command {
-    my ($command, $config, $args, $input) = @_;
+    my ($command, $config, $args, $input, $force_local_command) = @_;
 
-    # XXX: Special case for mysql.osg.ufl.edu, to which the MySQL client on nersp cannot connect
     my $database_host = $config->{database}->{host};
 
     my $output;
-    if (my $host = $config->{host} and my $user = $config->{user} and $database_host ne 'mysql.osg.ufl.edu') {
+    if (my $host = $config->{host} and my $user = $config->{user} and not $force_local_command) {
         $output = run_remote_comamnd($user, $host, $command, $args, $input);
     }
     else {
@@ -234,7 +239,9 @@ sub run_local_command {
     }
 
     waitpid $pid, 0;
-    croak $error if $error;
+    if ($error) {
+        croak $error;
+    }
 
     return $output;
 }
