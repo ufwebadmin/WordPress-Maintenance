@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.14
+0.14  Tue Jan 20 10:21:46 EST 2009
         - Fix special case for mysql.osg.ufl.edu
 
 0.13  Fri Jan 16 17:50:13 EST 2009
