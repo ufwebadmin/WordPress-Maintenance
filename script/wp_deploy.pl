@@ -150,7 +150,6 @@ sub stage_configuration {
         %{ $config },
     };
 
-    my @files;
     File::Find::find(sub {
         return if -d $File::Find::name;
         return if $File::Find::dir =~ /\B\.svn\b/;

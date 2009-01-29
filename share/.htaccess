@@ -7,7 +7,7 @@
   AuthName "GatorLink"
   AuthType GatorLink
   GatorLinkTimeout 60
-  Require [% IF allow_all_users %]valid-user[% END %][% ELSE %]user [% users.join(' ') %][% END %]
+  Require [% IF allow_all_users %]valid-user[% ELSE %]user [% users.join(' ') %][% END %]
 </Files>
 [% END -%]
 
