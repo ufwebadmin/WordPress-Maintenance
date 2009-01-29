@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.16
+0.16  Thu Jan 29 14:12:41 EST 2009
         - Fix .htaccess template syntax and add tests of templates
 
 0.15  Thu Jan 29 13:07:56 EST 2009
