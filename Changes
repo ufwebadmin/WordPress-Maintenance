@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.15
+        - Add allow_all_users configuration parameter to "Reqire
+          valid-user" instead of specific users
+
 0.14  Tue Jan 20 10:21:46 EST 2009
         - Fix special case for mysql.osg.ufl.edu
 
