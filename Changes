@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.17
+        - Add use_flock configuration parameter for WP-Cache, defaults
+          to false
+
 0.16  Thu Jan 29 14:12:41 EST 2009
         - Fix .htaccess template syntax and add tests of templates
 

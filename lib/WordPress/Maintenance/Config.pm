@@ -12,6 +12,7 @@ our $DEFAULT_CONFIG = {
     allow_comments => 0,
     wordpress => {
         wp_cache => {
+            use_flock =>        0,
             acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
             rejected_uris    => [ 'wp-' ],
         },
