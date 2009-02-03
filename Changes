@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.17
+0.17  Tue Feb  3 14:27:47 EST 2009
         - Add use_flock configuration parameter for WP-Cache, defaults
           to false
 
