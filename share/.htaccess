@@ -3,11 +3,17 @@
 </FilesMatch>
 [% IF gatorlink_auth -%]
 
+# Tell the Shibboleth plugin to make itself active (which allows the
+# Shibboleth.sso request handlers to bypass the WordPress rewrite
+# rules)
+AuthType Shibboleth
+Require Shibboleth
+
 <Files wp-login.php>
   AuthName "GatorLink"
-  AuthType GatorLink
-  GatorLinkTimeout 60
-  Require [% IF allow_all_users %]valid-user[% ELSE %]user [% users.join(' ') %][% END %]
+  AuthType Shibboleth
+  ShibRequestSetting requireSession 1
+  Require [% IF allow_all_users %]valid-user[% ELSE %]user ~ ^([% users.join('|') %])@ufl\.edu$[% END %]
 </Files>
 [% END -%]
 
@@ -25,6 +31,11 @@
   RewriteCond %{HTTP_HOST} !^$
   RewriteRule ^(.*) [% uri %]/$1 [L,R=permanent]
 </IfModule>
+
+#
+# Automatically generated directives go below. These include the
+# WordPress rewrite rules and any plugin-related directives.
+#
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>

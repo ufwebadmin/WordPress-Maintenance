@@ -2,7 +2,7 @@ Options -Indexes
 [% IF gatorlink_auth -%]
 
 AuthName "GatorLink"
-AuthType GatorLink
-GatorLinkTimeout 60
-Require [% IF allow_all_users %]valid-user[% ELSE %]user [% users.join(' ') %][% END %]
+AuthType Shibboleth
+ShibRequestSetting requireSession 1
+Require [% IF allow_all_users %]valid-user[% ELSE %]user ~ ^([% users.join('|') %])@ufl\.edu$[% END %]
 [% END -%]
