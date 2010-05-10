@@ -5,6 +5,8 @@ This file documents the revision history for WordPress::Maintenance.
         - Update wp-config.php template to be based on WordPress 2.9.2
           (#24)
         - Set default dump_encoding value to utf8
+        - Add keys section of configuration to set secret phrases in
+          wp-config.php
 
 0.17  Tue Feb  3 14:27:47 EST 2009
         - Add use_flock configuration parameter for WP-Cache, defaults
