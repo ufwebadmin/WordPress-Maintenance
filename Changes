@@ -4,6 +4,7 @@ This file documents the revision history for WordPress::Maintenance.
         - Update .htaccess templates to use Shibboleth (#24)
         - Update wp-config.php template to be based on WordPress 2.9.2
           (#24)
+        - Set default dump_encoding value to utf8
 
 0.17  Tue Feb  3 14:27:47 EST 2009
         - Add use_flock configuration parameter for WP-Cache, defaults

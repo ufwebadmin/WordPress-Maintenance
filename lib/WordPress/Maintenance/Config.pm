@@ -17,6 +17,9 @@ our $DEFAULT_CONFIG = {
             rejected_uris    => [ 'wp-' ],
         },
     },
+    database => {
+        dump_encoding => 'utf8',
+    },
 };
 our $DEFAULT_MERGE = 1;
 our $DEFAULT_USERS_FILENAME = 'users.txt';
