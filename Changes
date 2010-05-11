@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.18
+0.18  Tue May 11 11:17:25 EDT 2010
         - Update .htaccess templates to use Shibboleth (#24)
         - Update wp-config.php template to be based on WordPress 2.9.2
           (#24)
