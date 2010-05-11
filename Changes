@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.19
+0.19  Tue May 11 12:06:04 EDT 2010
         - Update http_authentication_logout_uri for Shibboleth
 
 0.18  Tue May 11 11:17:25 EDT 2010
