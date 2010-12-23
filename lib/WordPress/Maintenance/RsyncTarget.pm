@@ -4,7 +4,9 @@ use strict;
 use warnings;
 use base qw/Class::Accessor::Fast/;
 use overload
-    '""' => \&as_string;
+    '""' => \&as_string,
+    'eq' => \&equals,
+    'ne' => \&not_equals;
 use File::Spec;
 
 __PACKAGE__->mk_accessors(qw/path user host/);
@@ -79,6 +81,34 @@ sub as_string {
     }
 
     return $target;
+}
+
+=head2 equals
+
+Test whether this C<rsync(1)> target is the same as the specified
+one. The object of the comparison can be a
+L<WordPress::Maintenance::RsyncTarget> instance or a string.
+
+=cut
+
+sub equals {
+    my ($self, $other) = @_;
+
+    return $self->as_string eq $other;
+}
+
+=head2 not_equals
+
+Test whether this C<rsync(1)> target is not the same as the specified
+one. The object of the comparison can be a
+L<WordPress::Maintenance::RsyncTarget> instance or a string.
+
+=cut
+
+sub not_equals {
+    my ($self, $other) = @_;
+
+    return $self->as_string ne $other;
 }
 
 =head1 AUTHOR

@@ -5,7 +5,7 @@ use FindBin;
 use WordPress::Maintenance::Config;
 use WordPress::Maintenance::RsyncTarget;
 
-use Test::More tests => 18;
+use Test::More tests => 20;
 
 my $config = WordPress::Maintenance::Config->new(File::Spec->join($FindBin::Dir, 'site'));
 
@@ -38,3 +38,8 @@ my $prod_subdirectory = $prod->subdirectory('wp-content', 'uploads');
 isa_ok($prod_subdirectory, 'WordPress::Maintenance::RsyncTarget');
 is($prod_subdirectory, 'wwwuf@nersp.osg.ufl.edu:/nerdc/www/test.ufl.edu/wp-content/uploads', 'prod target with additional path is correct');
 ok($prod_subdirectory->is_remote, 'prod target with additional path is remote');
+
+# Test object string equality via overload
+my $prod2 = WordPress::Maintenance::RsyncTarget->new($config->for_environment('prod'));
+is($prod, $prod2, 'string equality via overload works');
+isnt($test, $prod, 'string equality via overload works');

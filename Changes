@@ -1,5 +1,8 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.20
+        - Fix string equality test in ::RsyncTarget for Perl 5.12
+
 0.19  Tue May 11 12:06:04 EDT 2010
         - Update http_authentication_logout_uri for Shibboleth
 
