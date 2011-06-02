@@ -21,6 +21,9 @@ Require Shibboleth
   RewriteEngine On
   RewriteBase [% base %]
 
+  # Hack to use HTTP basic authentication on FastCGI for AtomPub (http://core.trac.wordpress.org/ticket/7361)
+  RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]
+
   # Point /admin to /wp-admin/
   RewriteRule ^admin(/(.*))?$ wp-admin/$2 [QSA,L,R=permanent]
 
