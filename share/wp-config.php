@@ -59,7 +59,7 @@ define('NONCE_SALT',       '[% salts.nonce %]');
  * You can have multiple installations in one database if you give each a unique
  * prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_';
+$table_prefix  = '[% database.table_prefix ? database.table_prefix : 'wp_' %]';
 
 /**
  * WordPress Localized Language, defaults to English.
@@ -69,7 +69,7 @@ $table_prefix  = 'wp_';
  * de_DE.mo to wp-content/languages and set WPLANG to 'de_DE' to enable German
  * language support.
  */
-define('WPLANG', '');
+define('WPLANG', '[% wordpress.language %]');
 
 /**
  * For developers: WordPress debugging mode.
@@ -78,7 +78,7 @@ define('WPLANG', '');
  * It is strongly recommended that plugin and theme developers use WP_DEBUG
  * in their development environments.
  */
-define('WP_DEBUG', false);
+define('WP_DEBUG', [% wordpress.debug ? 'true' : 'false' %]);
 
 /**
  * Enable the WordPress cache system, so that wp-cache can run
