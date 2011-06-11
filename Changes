@@ -1,5 +1,8 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.21
+        - Bring wp-config.php in sync with WordPress 3.1
+
 0.20  Thu Jun  2 11:11:37 EDT 2011
         - Fix string equality test in ::RsyncTarget for Perl 5.12
         - Add REMOTE_USER hack for HTTP basic authentication and AtomPub
