@@ -64,16 +64,10 @@ our @ADMIN = qw(
     users.php
 );
 
-our @MINT = (
-    'index.php',
-    File::Spec->join(qw/pepper colbymakowsky sparks sparks.php/),
-);
-
 our @ALL = (
     @ROOT,
     (map { File::Spec->join($WordPress::Maintenance::Directories::INCLUDES, $_) } @INCLUDES),
     (map { File::Spec->join($WordPress::Maintenance::Directories::ADMIN, $_) } @ADMIN),
-    (map { File::Spec->join($WordPress::Maintenance::Directories::MINT, $_) } @MINT),
 );
 
 =head1 NAME
@@ -92,9 +86,6 @@ WordPress::Maintenance::Executables - List WordPress-related files which need ex
 
     # Just those in wp-admin
     print join ', ', @WordPress::Maintenance::Executables::ADMIN;
-
-    # Just those in mint
-    print join ', ', @WordPress::Maintenance::Executables::MINT;
 
     # All of the above (those in e.g. wp-admin have appropriate
     # directory prepended)

@@ -7,7 +7,6 @@ use File::Spec;
 our $ADMIN = 'wp-admin';
 our $CONTENT = 'wp-content';
 our $INCLUDES = 'wp-includes';
-our $MINT = 'mint';
 our $UPLOADS = 'uploads';
 
 our @PLUGIN = qw(
@@ -23,7 +22,6 @@ our @ALL = (
     $ADMIN,
     $CONTENT,
     $INCLUDES,
-    $MINT,
     @WRITABLE,
 );
 
@@ -38,11 +36,10 @@ WordPress::Maintenance::Directories - List WordPress-related directories
     # Just those required by plugins in the default UF WordPress install
     print join ', ', @WordPress::Maintenance::Directories::PLUGIN;
 
-    # Just wp-admin, wp-content, wp-includes, and mint
+    # Just wp-admin, wp-content, and wp-includes
     print $WordPress::Maintenance::Directories::ADMIN;
     print $WordPress::Maintenance::Directories::CONTENT;
     print $WordPress::Maintenance::Directories::INCLUDES;
-    print $WordPress::Maintenance::Directories::MINT;
     print $WordPress::Maintenance::Directories::UPLOADS;
 
     # All of the above that need to be writable by the Web server

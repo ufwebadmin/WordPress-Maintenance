@@ -28,7 +28,6 @@ File::Find::find(sub {
     return if -d $File::Find::name;
     return if $File::Find::name =~ /~$/;
     return if $File::Find::dir =~ /\B\.svn\b/;
-    return if $File::Find::dir =~ /\bmint\b/;
 
     my $output;
     ok($tt->process($File::Find::name, $stash, \$output), "successfully processed $File::Find::name");
