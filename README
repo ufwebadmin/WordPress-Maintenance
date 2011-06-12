@@ -1,0 +1,66 @@
+Introduction
+------------
+
+WordPress-Maintenance is a set of scripts designed to simplify
+management of WordPress sites across multiple environments. This is
+common with development, testing, and production versions of sites.
+
+Two scripts are included:
+
+ * wp_deploy.pl - Deploy WordPress to a specified environment
+
+ * wp_sync_database.pl - Synchronize the WordPress database from one
+   environment to another, including uploads
+
+The scripts work based on a local copy of the WordPress files and a
+configuration file. This allows you to maintain your WordPress setup
+in a version control system, including references to the appropriate
+version of WordPress and any plugins. For example, you might have a
+Subversion repository containing the following:
+
+wordpress_site_name/
+  config.yml
+  www/
+    [...]
+    wp-content/
+      [...]
+      plugins/
+        http-authentication/
+
+The "www" directory can be configured using svn:externals to
+automatically check out the required WordPress components.
+
+For an example configuration file, see the perldoc for
+WordPress::Maintenance::Config.
+
+
+Multisite setups
+----------------
+
+WordPress multisite setups are supported as of version 0.21. When
+installing, you can follow the basic instructions provided by
+WordPress:
+
+http://codex.wordpress.org/Create_A_Network
+
+For the WordPress-Maintenance scripts, make sure you've set the
+"multisite" flag in your config.yml.
+
+Then, when you initially deploy to an environment, manually disable
+the following WordPress network settings in your wp-config.php file:
+
+ * MULTISITE
+ * SUBDOMAIN_INSTALL
+ * $base
+ * DOMAIN_CURRENT_SITE
+ * PATH_CURRENT_SITE
+ * SITE_ID_CURRENT_SITE
+ * BLOG_ID_CURRENT_SITE
+
+Just comment out those lines, perform the installation, and then
+uncomment them. WordPress uses them to test whether the network has
+been installed. If they are enabled before you finish the
+installation, WordPress will show errors connecting to the database.
+
+On subsequent deploy operations, the wp-config.php file should work as
+filled out by WordPress-Maintenance.

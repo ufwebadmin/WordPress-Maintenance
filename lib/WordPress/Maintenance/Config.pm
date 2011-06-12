@@ -41,6 +41,69 @@ WordPress::Maintenance::Config - Load configuration for a WordPress instance
 
 Automatically load configuration for a WordPress site.
 
+=head1 EXAMPLE CONFIGURATION
+
+For a given site directory, the configuration is typically located in
+a file named C<config.yml>.  For example:
+
+    --- #YAML:1.0
+    # Do not use tabs for indentation or label/value separation!
+    dev:
+      path:           /var/www/dev.example.com/htdocs
+      uri:            https://dev.example.com
+      base:           /news/
+      exclude_robots: 1
+      wordpress:
+        multisite: 0
+        wp_cache:
+          enabled: 0
+        options:
+      database:
+        host:          mysql.example.com
+        user:          dev
+        password:      p4ssw0rd
+        name:          dev
+
+    test:
+      host:           test.example.com
+      path:           /nerdc/www/test.example.com/htdocs
+      uri:            http://test.example.com
+      base:           /
+      exclude_robots: 1
+      wordpress:
+        multisite: 0
+        wp_cache:
+          enabled: 0
+        options:
+      database:
+        host:          mysql.example.com
+        port:          3307
+        user:          news
+        password:      p4ssw0rd
+        name:          news
+
+    prod:
+      host:           prod.example.com
+      path:           /nerdc/www/prod.example.com/htdocs
+      uri:            http://prod.example.com
+      base:           /
+      exclude_robots: 0
+      wordpress:
+        multisite: 0
+        wp_cache:
+          enabled: 0
+        options:
+      database:
+        host:          mysql.example.com
+        port:          3306
+        user:          news
+        password:      p4ssw0rd
+        name:          news
+
+Other parameters are supported; see the configuration templates
+distributed with this library for details on what goes where in
+WordPress.
+
 =head1 METHODS
 
 =head2 new
