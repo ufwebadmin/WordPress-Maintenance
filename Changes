@@ -4,6 +4,7 @@ This file documents the revision history for WordPress::Maintenance.
         - Bring wp-config.php in sync with WordPress 3.1 and add
           additional configuration parameters
         - Remove support for Mint (old statistics package)
+        - Make configured URI into an object for easier manipulation
 
 0.20  Thu Jun  2 11:11:37 EDT 2011
         - Fix string equality test in ::RsyncTarget for Perl 5.12

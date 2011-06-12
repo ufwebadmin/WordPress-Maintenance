@@ -5,6 +5,7 @@ use warnings;
 use Carp;
 use File::Spec;
 use Hash::Merge ();
+use URI;
 use YAML ();
 
 our $DEFAULT_CONFIG_FILENAME = 'config.yml';
@@ -91,6 +92,9 @@ sub _load_config {
     if ($merge) {
         foreach my $environment (keys %$config) {
             $config->{$environment} = Hash::Merge::merge($config->{$environment}, $DEFAULT_CONFIG);
+
+            my $uri = URI->new($config->{$environment}->{uri});
+            $config->{$environment}->{uri} = $uri;
         }
     }
 
