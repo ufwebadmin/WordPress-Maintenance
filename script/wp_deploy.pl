@@ -81,7 +81,7 @@ Available options:
   -t, --templates      The path to the directory containing configuration file
                        templates
   -C, --checkout       Keep SVN checkout data when deploying
-      --cleanup        Clean up temporary directory aftet deploying
+      --cleanup        Clean up temporary directory after deploying
                        (default: on)
   -h, --help           Print this help screen and exit
 END_OF_USAGE
