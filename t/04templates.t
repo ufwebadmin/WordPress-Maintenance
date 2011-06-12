@@ -31,4 +31,5 @@ File::Find::find(sub {
 
     my $output;
     ok($tt->process($File::Find::name, $stash, \$output), "successfully processed $File::Find::name");
+    diag($@) if $@;
 }, $template_directory);
