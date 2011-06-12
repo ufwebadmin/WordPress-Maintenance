@@ -25,7 +25,7 @@ Require Shibboleth
   RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization}]
 
   # Point /admin to /wp-admin/
-  RewriteRule ^admin(/(.*))?$ wp-admin/$2 [QSA,L,R=permanent]
+  RewriteRule ^([_0-9a-zA-Z-]+/)?admin(/(.*))?$ $1wp-admin/$3 [QSA,L,R=permanent]
 
   # Redirect to the canonical host
   RewriteCond %{HTTP_HOST} !^[% uri.host.replace('\.', '\\.') %] [NC]
@@ -39,6 +39,24 @@ Require Shibboleth
 #
 
 # BEGIN WordPress
+[% IF wordpress.multisite -%]
+RewriteEngine On
+RewriteBase [% base %]
+RewriteRule ^index\.php$ - [L]
+
+# uploaded files
+RewriteRule ^([_0-9a-zA-Z-]+/)?files/(.+) wp-includes/ms-files.php?file=$2 [L]
+
+# add a trailing slash to /wp-admin
+RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule  ^[_0-9a-zA-Z-]+/(wp-(content|admin|includes).*) $1 [L]
+RewriteRule  ^[_0-9a-zA-Z-]+/(.*\.php)$ $1 [L]
+RewriteRule . index.php [L]
+[% ELSE -%]
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase [% base %]
@@ -47,5 +65,6 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . [% base %]index.php [L]
 </IfModule>
+[% END -%]
 
 # END WordPress

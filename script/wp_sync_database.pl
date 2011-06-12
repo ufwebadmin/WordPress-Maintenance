@@ -13,6 +13,7 @@ use POSIX qw(:sys_wait_h);
 use URI;
 use WordPress::Maintenance;
 use WordPress::Maintenance::Config;
+use WordPress::Maintenance::Directories;
 use WordPress::Maintenance::RsyncTarget;
 
 
@@ -93,7 +94,17 @@ sub dump_database {
 sub sync_uploads {
     my ($from_config, $to_config) = @_;
 
-    my @upload_path = qw/wp-content uploads/;
+    _sync_uploads($from_config, $to_config, $WordPress::Maintenance::Directories::UPLOADS);
+
+    if ($from_config->{wordpress}->{multisite}) {
+        _sync_uploads($from_config, $to_config, $WordPress::Maintenance::Directories::UPLOAD_BLOGS);
+    }
+}
+
+sub _sync_uploads {
+    my ($from_config, $to_config, $directory) = @_;
+
+    my @upload_path = ($WordPress::Maintenance::Directories::CONTENT, $directory);
 
     my $from_target = WordPress::Maintenance::RsyncTarget->new($from_config);
     $from_target = $from_target->subdirectory(@upload_path);
@@ -103,15 +114,15 @@ sub sync_uploads {
 
     # Handle remote-to-remote rsync
     if ($from_target->is_remote and $to_target->is_remote) {
-        my $path = tempdir(CLEANUP => 1);
+        my $tmp_path = tempdir(CLEANUP => 1);
 
-        my $tmp_target = WordPress::Maintenance::RsyncTarget->new({ path => $path });
+        my $tmp_target = WordPress::Maintenance::RsyncTarget->new({ path => $tmp_path });
         WordPress::Maintenance::copy($from_target, $tmp_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
 
         $from_target = $tmp_target;
     }
 
-    # Ensure wp-content/uploads exists at the destination
+    # Ensure path exists at the destination
     run_command('mkdir', $to_config, [ '-p', File::Spec->join($to_config->{path}, @upload_path) ]);
 
     WordPress::Maintenance::copy($from_target, $to_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);

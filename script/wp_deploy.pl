@@ -188,13 +188,14 @@ sub make_executable {
 sub deploy {
     my ($stage_directory, $config) = @_;
 
-    my $uploads_path = join('/',
-        $WordPress::Maintenance::Directories::CONTENT,
-        $WordPress::Maintenance::Directories::UPLOADS
-    );
-
     my $target = WordPress::Maintenance::RsyncTarget->new($config);
-    WordPress::Maintenance::copy($stage_directory, $target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS, "--filter", "P /${uploads_path}/*" ]);
+
+    my @args = @WordPress::Maintenance::DEFAULT_RSYNC_ARGS;
+    push @args, map {
+        ("--filter", "P /$_/*")
+    } @WordPress::Maintenance::Directories::WRITABLE;
+
+    WordPress::Maintenance::copy($stage_directory, $target, \@args);
     WordPress::Maintenance::set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
 
     if (my $server_group = $config->{server_group}) {
