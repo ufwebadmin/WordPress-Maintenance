@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 use Carp;
+use File::Path ();
 use File::Spec;
-use File::Temp qw(tempdir);
 use Getopt::Long;
 use IO::Select;
 use IPC::Open3;
@@ -112,13 +112,9 @@ sub _sync_uploads {
     my $to_target = WordPress::Maintenance::RsyncTarget->new($to_config);
     $to_target = $to_target->subdirectory(@upload_path);
 
-    # Handle remote-to-remote rsync
-    if ($from_target->is_remote and $to_target->is_remote) {
-        my $tmp_path = tempdir(CLEANUP => 1);
-
-        my $tmp_target = WordPress::Maintenance::RsyncTarget->new({ path => $tmp_path });
-        WordPress::Maintenance::copy($from_target, $tmp_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
-
+    # Speed up remote rsync by caching locally
+    if ($from_target->is_remote) {
+        my $tmp_target = _sync_remote_uploads($from_target);
         $from_target = $tmp_target;
     }
 
@@ -127,6 +123,23 @@ sub _sync_uploads {
 
     WordPress::Maintenance::copy($from_target, $to_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
     WordPress::Maintenance::set_ownership($to_config->{path}, $to_config->{user}, $to_config->{group}, $to_config->{host});
+}
+
+# Sync remote uploads to a local directory, returning its location
+sub _sync_remote_uploads {
+    my ($from_target) = @_;
+
+    my $path = $from_target->path;
+    $path =~ s/\//_/g;
+
+    my $tmp_path = File::Spec->join(File::Spec->tmpdir, $path);
+    File::Path::make_path($tmp_path);
+    chmod 0777, $tmp_path;
+
+    my $tmp_target = WordPress::Maintenance::RsyncTarget->new({ path => $tmp_path });
+    WordPress::Maintenance::copy($from_target, $tmp_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
+
+    return $tmp_target;
 }
 
 sub load_database {

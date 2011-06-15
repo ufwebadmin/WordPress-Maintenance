@@ -6,6 +6,8 @@ This file documents the revision history for WordPress::Maintenance.
         - Remove support for Mint (old statistics package)
         - Make configured URI into an object for easier manipulation
         - Add support for multisite WordPress setups
+        - Improve wp_sync_database.pl so that it keeps a local cache
+          of uploads, saving time on repeated runs
 
 0.20  Thu Jun  2 11:11:37 EDT 2011
         - Fix string equality test in ::RsyncTarget for Perl 5.12
