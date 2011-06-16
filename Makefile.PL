@@ -7,8 +7,10 @@ all_from 'lib/WordPress/Maintenance.pm';
 
 requires 'Carp';
 requires 'Class::Accessor::Fast';
+requires 'Digest::SHA';
 requires 'File::Find';
 requires 'File::ShareDir';
+requires 'File::Slurp';
 requires 'File::Spec';
 requires 'File::Temp';
 requires 'Getopt::Long';
@@ -18,6 +20,7 @@ requires 'IPC::Open3';
 requires 'Net::SSH';
 requires 'POSIX';
 requires 'Template';
+requires 'Time::HiRes';
 requires 'URI';
 requires 'YAML';
 

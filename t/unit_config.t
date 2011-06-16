@@ -4,7 +4,7 @@ use File::Spec;
 use FindBin;
 use WordPress::Maintenance::Config;
 
-use Test::More tests => 59;
+use Test::More tests => 67;
 
 my $config = WordPress::Maintenance::Config->new(File::Spec->join($FindBin::Dir, 'site'));
 isa_ok($config, 'WordPress::Maintenance::Config');
@@ -74,3 +74,15 @@ is($prod->{database}->{dump_encoding}, 'latin1');
 
 my $users = $config->users;
 is_deeply($users, [ qw/akirby dwc gtmcknig mr2 trammell/ ]);
+
+my $keys = $config->keys;
+is($keys->{auth}, 'ZnZc8J/HsBOe8uPmRT+0iQxTrIRgS+/7VYb2vd87ONEircjP6cBqJ9tAhWZF+tgckfK0IpkKq7QVHhLKFqe9RQ');
+is($keys->{secure_auth}, 'xY2WZ/wB6rbGkSZ9vBwecrtC4IvSRnZLsCwF2fRZ0/q+k5MBoRG9Br2reugTu/8c6a3RIL5r0uehf8iKgWD0EA');
+is($keys->{logged_in}, 'QRjXU8aRda+ID08z/el3MxEImKWzJoWEA3LE+7Bcdru7iLUgkMqkTMFVK2z5mKGWiUlViibJfj2qFybqpxvoEA');
+is($keys->{nonce}, 'jug9EB57ZsjIxYz3abf4gikqwBg/BgD+B+keBs9AG4VjfFRYXqGnOzx4XeyPImH7wOkP5tQGiNS26XCsu0TEyA');
+
+my $salts = $config->salts;
+is($salts->{auth}, 'rj56iqrEvtQ/T0BOlm2+4BYvPJiSk9vIAEcot+/GcZMU18lv0cOJk0F0gopOda/XLH0qbs2ahGzyfJkNRAuxzg');
+is($salts->{secure_auth}, 'zrwpl7FdynLNe0WCCXkXxkG/BnRN61gNRX48A21TucO8HHPhUjZAw8AW7qoXmVgoGRREPE71KKvM5dMolNO0iQ');
+is($salts->{logged_in}, 'nBB6jrifc6sVnmkgm1aE4r2hH9auomC3Jt6KhrPIApIv54JcN8xt98qRnqXh1kEICPjX/gWxeCSXguPQ5mfJrQ');
+is($salts->{nonce}, '5PRfyeDCr4mVjCvzcL8nv/BNZxsKpHFtgkJSnSiQXd2tLoZ45zUswdfUV7NhDhixhAbQcPgzV3evZQHEiZTtgg');
