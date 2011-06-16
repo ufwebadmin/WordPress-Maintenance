@@ -57,13 +57,10 @@ sub main {
         unless -d $www_directory and -d File::Spec->join($www_directory, $WordPress::Maintenance::Directories::CONTENT);
 
     my $config = WordPress::Maintenance::Config->new($source_directory);
-    my $environment_config = $config->for_environment($environment);
-    $environment_config->{gatorlink_auth} = 1
-        unless exists $environment_config->{gatorlink_auth};
 
     my $stage_directory = tempdir(CLEANUP => $cleanup);
-    stage($www_directory, $environment_config, $config->users, $template_directory, $stage_directory, $checkout);
-    deploy($stage_directory, $environment_config);
+    stage($www_directory, $config, $environment, $template_directory, $stage_directory, $checkout);
+    deploy($stage_directory, $config, $environment);
 }
 
 
@@ -88,12 +85,14 @@ END_OF_USAGE
 }
 
 sub stage {
-    my ($www_directory, $config, $users, $template_directory, $stage_directory, $checkout) = @_;
+    my ($www_directory, $config, $environment, $template_directory, $stage_directory, $checkout) = @_;
+
+    my $environment_config = $config->for_environment($environment);
 
     stage_wordpress($www_directory, $stage_directory, $checkout);
-    stage_configuration($config, $users, $template_directory, $stage_directory);
+    stage_configuration($config, $environment, $template_directory, $stage_directory);
 
-    if (my $shebang = $config->{shebang}) {
+    if (my $shebang = $environment_config->{shebang}) {
         my @executables = map { File::Spec->join($stage_directory, $_) } @WordPress::Maintenance::Executables::ALL;
         add_shebang($shebang, \@executables);
         make_executable(\@executables);
@@ -116,7 +115,7 @@ sub stage {
     chdir $cwd;
 
     # Add robots.txt if requested
-    if ($config->{exclude_robots}) {
+    if ($environment_config->{exclude_robots}) {
         open my $fh, '>', File::Spec->join($stage_directory, 'robots.txt') or die $!;
         print $fh "User-agent: *\nDisallow: /\n";
         close $fh;
@@ -138,7 +137,7 @@ sub stage_wordpress {
 }
 
 sub stage_configuration {
-    my ($config, $users, $template_directory, $stage_directory) = @_;
+    my ($config, $environment, $template_directory, $stage_directory) = @_;
 
     my $tt = Template->new(
         INCLUDE_PATH => $template_directory,
@@ -146,8 +145,10 @@ sub stage_configuration {
     );
 
     my $stash = {
-        users => $users,
-        %{ $config },
+        users => $config->users,
+        keys  => $config->keys,
+        salts => $config->salts,
+        %{ $config->for_environment($environment) },
     };
 
     File::Find::find(sub {
@@ -186,9 +187,10 @@ sub make_executable {
 }
 
 sub deploy {
-    my ($stage_directory, $config) = @_;
+    my ($stage_directory, $config, $environment) = @_;
 
-    my $target = WordPress::Maintenance::RsyncTarget->new($config);
+    my $environment_config = $config->for_environment($environment);
+    my $target = WordPress::Maintenance::RsyncTarget->new($environment_config);
 
     my @args = @WordPress::Maintenance::DEFAULT_RSYNC_ARGS;
     push @args, map {
@@ -196,12 +198,12 @@ sub deploy {
     } @WordPress::Maintenance::Directories::WRITABLE;
 
     WordPress::Maintenance::copy($stage_directory, $target, \@args);
-    WordPress::Maintenance::set_ownership($config->{path}, $config->{user}, $config->{group}, $config->{host});
+    WordPress::Maintenance::set_ownership($environment_config->{path}, $environment_config->{user}, $environment_config->{group}, $environment_config->{host});
 
-    if (my $server_group = $config->{server_group}) {
+    if (my $server_group = $environment_config->{server_group}) {
         for (@WordPress::Maintenance::Directories::WRITABLE) {
-            my $directory = File::Spec->join($config->{path}, $_);
-            WordPress::Maintenance::set_ownership($directory, $config->{user}, $server_group, $config->{host});
+            my $directory = File::Spec->join($environment_config->{path}, $_);
+            WordPress::Maintenance::set_ownership($directory, $environment_config->{user}, $server_group, $environment_config->{host});
         }
     }
 }
