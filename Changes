@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.21
+0.21  Thu Jun 16 14:55:27 EDT 2011
         - Bring wp-config.php in sync with WordPress 3.1 and add
           additional configuration parameters
         - Remove support for Mint (old statistics package)
