@@ -61,6 +61,8 @@ sub main {
     my $stage_directory = tempdir(CLEANUP => $cleanup);
     stage($www_directory, $config, $environment, $template_directory, $stage_directory, $checkout);
     deploy($stage_directory, $config, $environment);
+
+    print "Done.\n";
 }
 
 

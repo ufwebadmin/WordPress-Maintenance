@@ -7,7 +7,6 @@ our $VERSION = '0.21_01';
 
 our @DEFAULT_RSYNC_ARGS = qw(
     --archive
-    --verbose
     --compress
     --delete
     --no-perms
@@ -59,9 +58,9 @@ sub set_ownership {
 
     return unless $group;
 
-    my @cmd = ('chgrp', '-R', $group);
+    my @cmd = ('chgrp', '-R', '-f', $group);
     if ($user) {
-        @cmd = ('chown', '-R', "$user:$group");
+        @cmd = ('chown', '-R', '-f', "$user:$group");
     }
 
     push @cmd, $path;

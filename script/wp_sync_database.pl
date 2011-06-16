@@ -50,6 +50,8 @@ sub main {
 
     my $config = WordPress::Maintenance::Config->new($source_directory);
     sync_database($config->for_environment($from), $config->for_environment($to), $skip_uploads);
+
+    print "Done.\n";
 }
 
 
