@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.22
+0.22  Mon Jul  4 17:48:36 EDT 2011
         - Update authentication configuration to be more flexible
         - Rename gatorlink_auth parameter to auth.shibboleth
         - Add auth.require parameter to force Shibboleth
