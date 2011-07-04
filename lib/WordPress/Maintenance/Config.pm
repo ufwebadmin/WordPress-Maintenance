@@ -17,10 +17,14 @@ our $DEFAULT_CONFIG = {
     allow_comments => 0,
     wordpress => {
         wp_cache => {
-            use_flock =>        0,
+            use_flock        => 0,
             acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
             rejected_uris    => [ 'wp-' ],
         },
+    },
+    auth => {
+        shibboleth => 1,
+        require    => 1,
     },
     database => {
         dump_encoding => 'utf8',
@@ -67,11 +71,14 @@ a file named C<config.yml>.  For example:
         wp_cache:
           enabled: 0
         options:
+      auth:
+        shibboleth: 1
+        require:    1
       database:
-        host:          mysql.example.com
-        user:          dev
-        password:      p4ssw0rd
-        name:          dev
+        host:     mysql.example.com
+        user:     dev
+        password: p4ssw0rd
+        name:     dev
 
     test:
       host:           test.example.com
@@ -84,12 +91,15 @@ a file named C<config.yml>.  For example:
         wp_cache:
           enabled: 0
         options:
+      auth:
+        shibboleth: 1
+        require:    1
       database:
-        host:          mysql.example.com
-        port:          3307
-        user:          news
-        password:      p4ssw0rd
-        name:          news
+        host:     mysql.example.com
+        port:     3307
+        user:     test
+        password: p4ssw0rd
+        name:     test
 
     prod:
       host:           prod.example.com
@@ -102,12 +112,15 @@ a file named C<config.yml>.  For example:
         wp_cache:
           enabled: 0
         options:
+      auth:
+        shibboleth: 1
+        require:    1
       database:
-        host:          mysql.example.com
-        port:          3306
-        user:          news
-        password:      p4ssw0rd
-        name:          news
+        host:     mysql.example.com
+        port:     3306
+        user:     prod
+        password: p4ssw0rd
+        name:     prod
 
 Other parameters are supported; see the configuration templates
 distributed with this library for details on what goes where in
@@ -241,9 +254,6 @@ sub for_environment {
         unless exists $self->{config}->{$environment};
 
     my $environment_config = $self->{config}->{$environment};
-
-    $environment_config->{gatorlink_auth} = 1
-        unless exists $environment_config->{gatorlink_auth};
 
     return $environment_config;
 }

@@ -1,5 +1,12 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.22
+        - Update authentication configuration to be more flexible
+        - Rename gatorlink_auth parameter to auth.shibboleth
+        - Add auth.require parameter to force Shibboleth
+        - Remove allow_all_users parameter in favor of check against
+          users.txt file
+
 0.21  Thu Jun 16 14:55:27 EDT 2011
         - Bring wp-config.php in sync with WordPress 3.1 and add
           additional configuration parameters

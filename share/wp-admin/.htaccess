@@ -1,8 +1,14 @@
 Options -Indexes
-[% IF gatorlink_auth -%]
+[% IF auth.shibboleth -%]
 
 AuthName "GatorLink"
 AuthType Shibboleth
+[% IF auth.require -%]
 ShibRequestSetting requireSession 1
-Require [% IF allow_all_users %]valid-user[% ELSE %]user ~ ^([% users.join('|') %])@ufl\.edu$[% END %]
+  [%- IF users.size > 0 %]
+Require user ~ ^([% users.join('|') %])@ufl\.edu$
+  [%- ELSE %]
+Require valid-user
+  [% END %]
+[% END -%]
 [% END -%]

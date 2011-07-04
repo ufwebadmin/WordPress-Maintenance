@@ -12,6 +12,9 @@ dev:
       enabled: 0
     options:
       fake_cache_ttl: 300
+  auth:
+    shibboleth: 0
+    require:    0
   database:
     host:          localhost
     user:          test
@@ -33,6 +36,9 @@ test:
       enabled: 1
     options:
       fake_cache_ttl: 3600
+  auth:
+    shibboleth: 1
+    require:    1
   database:
     host:          mysql01.osg.ufl.edu
     port:          3306
