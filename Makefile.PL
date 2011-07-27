@@ -22,6 +22,7 @@ requires 'POSIX';
 requires 'Template';
 requires 'Time::HiRes';
 requires 'URI';
+requires 'WWW::Mechanize';
 requires 'YAML';
 
 build_requires 'Carp';

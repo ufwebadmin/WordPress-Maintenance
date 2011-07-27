@@ -1,5 +1,8 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.23
+        - Add a script for exporting sites from WordPress
+
 0.22  Mon Jul  4 17:48:36 EDT 2011
         - Update authentication configuration to be more flexible
         - Rename gatorlink_auth parameter to auth.shibboleth
