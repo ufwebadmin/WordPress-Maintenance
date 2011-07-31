@@ -48,7 +48,7 @@ sub main {
     print usage() and exit() if $help;
 
     my $config = WordPress::Maintenance::Config->new($source_directory);
-    sync_database($config->for_environment($from), $config->for_environment($to), $skip_uploads);
+    sync_database($config, $from, $to, $skip_uploads);
 
     print "Done.\n";
 }
@@ -72,7 +72,10 @@ END_OF_USAGE
 }
 
 sub sync_database {
-    my ($from_config, $to_config, $skip_uploads) = @_;
+    my ($config, $from, $to, $skip_uploads) = @_;
+
+    my $from_config = $config->for_environment($from);
+    my $to_config   = $config->for_environment($to);
 
     my $dump = dump_database($from_config);
     if ($from_config->{database}->{dump_encoding} ne $to_config->{database}->{dump_encoding}) {
@@ -81,7 +84,11 @@ sub sync_database {
 
     sync_uploads($from_config, $to_config) unless $skip_uploads;
     load_database($to_config, $dump);
-    update_options($to_config);
+
+    # Need direct connection for multisite setups
+    my $to_dbh = $config->dbh($to);
+    update_options($to_dbh, $to_config);
+    $to_dbh->disconnect;
 }
 
 sub dump_database {
@@ -150,7 +157,7 @@ sub load_database {
 }
 
 sub update_options {
-    my ($config) = @_;
+    my ($dbh, $config) = @_;
 
     my %options = (
         %DEFAULT_WORDPRESS_OPTIONS,
@@ -161,17 +168,19 @@ sub update_options {
     my $uri = URI->new($config->{uri});
     $uri =~ s/\/$//;
 
-    my $options = '';
+    my $sth = $dbh->prepare("UPDATE wp_options SET option_value = ? WHERE option_name = ?")
+        or die $dbh->errstr;
+
     foreach my $option_name (keys %options) {
         my $option_value = defined $options{$option_name}
             ? $options{$option_name}
             : '';
         $option_value =~ s/__URI__/$uri/g;
 
-        $options .= "UPDATE wp_options SET option_value = '$option_value' WHERE option_name = '$option_name';\n";
+        $sth->execute($option_value, $option_name) or die $sth->errstr;
     }
 
-    run_mysql_command('mysql', $config, [], $options);
+    $sth->finish;
 }
 
 sub run_mysql_command {

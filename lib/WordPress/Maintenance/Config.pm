@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use base qw/Class::Accessor::Fast/;
 use Carp;
+use DBI;
 use Digest::SHA ();
 use File::Slurp ();
 use File::Spec;
@@ -256,6 +257,53 @@ sub for_environment {
     my $environment_config = $self->{config}->{$environment};
 
     return $environment_config;
+}
+
+=head2 dsn
+
+Return the string appropriate for connecting to the specified
+environment's MySQL database.
+
+=cut
+
+sub dsn {
+    my ($self, $environment) = @_;
+
+    my $environment_config = $self->for_environment($environment);
+    my $database_config = $environment_config->{database};
+
+    my $dsn = 'DBI:mysql:database=' . $database_config->{name};
+    foreach my $option (qw/host port/) {
+        $dsn .= ";$option=" . $database_config->{$option}
+            if $database_config->{$option};
+    }
+
+    return $dsn;
+}
+
+=head2 dbh
+
+Return a database connection to the specified environment's MySQL
+database.
+
+=cut
+
+sub dbh {
+    my ($self, $environment) = @_;
+
+    my $environment_config = $self->for_environment($environment);
+    my $database_config = $environment_config->{database};
+
+    my $dsn = $self->dsn($environment);
+
+    my $dbh = DBI->connect(
+        $dsn,
+        $database_config->{user},
+        $database_config->{password},
+        { RaiseError => 1 },
+    );
+
+    return $dbh;
 }
 
 =head1 AUTHOR

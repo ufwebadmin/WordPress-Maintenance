@@ -7,6 +7,7 @@ all_from 'lib/WordPress/Maintenance.pm';
 
 requires 'Carp';
 requires 'Class::Accessor::Fast';
+requires 'DBI';
 requires 'Digest::SHA';
 requires 'File::Find';
 requires 'File::ShareDir';
