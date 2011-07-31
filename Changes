@@ -3,6 +3,8 @@ This file documents the revision history for WordPress::Maintenance.
 0.23
         - Add a script for exporting sites from WordPress
         - Update wp_sync_database.pl to set options via DBI
+        - Update wp_sync_database.pl to set appropriate multisite
+          locations
 
 0.22  Mon Jul  4 17:48:36 EDT 2011
         - Update authentication configuration to be more flexible

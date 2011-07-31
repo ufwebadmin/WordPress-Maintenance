@@ -95,8 +95,8 @@ define('SUBDOMAIN_INSTALL', false);
 $base = '[% base %]';
 define('DOMAIN_CURRENT_SITE', '[% uri.host %]');
 define('PATH_CURRENT_SITE', '[% base %]');
-define('SITE_ID_CURRENT_SITE', 1);
-define('BLOG_ID_CURRENT_SITE', 1);
+define('SITE_ID_CURRENT_SITE', [% wordpress.site_id %]);
+define('BLOG_ID_CURRENT_SITE', [% wordpress.blog_id %]);
 [% END -%]
 
 /* That's all, stop editing! Happy blogging. */

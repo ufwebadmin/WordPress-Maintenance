@@ -17,6 +17,8 @@ our $DEFAULT_CONFIG_FILENAME = 'config.yml';
 our $DEFAULT_CONFIG = {
     allow_comments => 0,
     wordpress => {
+        site_id => 1,
+        blog_id => 1,
         wp_cache => {
             use_flock        => 0,
             acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
@@ -29,6 +31,7 @@ our $DEFAULT_CONFIG = {
     },
     database => {
         dump_encoding => 'utf8',
+        table_prefix => 'wp_',
     },
 };
 our $DEFAULT_MERGE = 1;

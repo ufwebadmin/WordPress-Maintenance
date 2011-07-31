@@ -159,16 +159,34 @@ sub load_database {
 sub update_options {
     my ($dbh, $config) = @_;
 
+    my $uri = URI->new($config->{uri});
+
+    my $table = $config->{database}->{table_prefix} . 'options';
+    _update_options($dbh, $config, $table, $uri);
+
+    # Update WordPress multisite paths if necessary
+    if ($config->{wordpress}->{multisite}) {
+        # Load the "from" domain and path to calculate for "to" location
+        my $site = _get_site($dbh, $config);
+
+        _update_site($dbh, $config, $uri);
+        _update_sitemeta($dbh, $config, $uri);
+        _update_blogs($dbh, $config, $uri, $site->{path});
+    }
+}
+
+sub _update_options {
+    my ($dbh, $config, $table, $uri) = @_;
+
     my %options = (
         %DEFAULT_WORDPRESS_OPTIONS,
         %{ $config->{wordpress}->{options} || {} },
     );
 
-    # WordPress doesn't like trailing slashes
-    my $uri = URI->new($config->{uri});
+    # WordPress doesn't like trailing slashes in siteurl and home
     $uri =~ s/\/$//;
 
-    my $sth = $dbh->prepare("UPDATE wp_options SET option_value = ? WHERE option_name = ?")
+    my $sth = $dbh->prepare("UPDATE $table SET option_value = ? WHERE option_name = ?")
         or die $dbh->errstr;
 
     foreach my $option_name (keys %options) {
@@ -181,6 +199,80 @@ sub update_options {
     }
 
     $sth->finish;
+}
+
+sub _get_site {
+    my ($dbh, $config) = @_;
+
+    my $table = $config->{database}->{table_prefix} . 'site';
+    my $sth = $dbh->prepare("SELECT * FROM $table WHERE id = ?")
+        or die $dbh->errstr;
+
+    $sth->execute($config->{wordpress}->{site_id});
+    my $site = $sth->fetchrow_hashref;
+    $sth->finish;
+
+    return $site;
+}
+
+sub _update_site {
+    my ($dbh, $config, $uri) = @_;
+
+    my $table = $config->{database}->{table_prefix} . 'site';
+    my $sth = $dbh->prepare("UPDATE $table SET domain = ?, path = ? WHERE id = ?")
+        or die $dbh->errstr;
+
+    $sth->execute($uri->host, $config->{base}, $config->{wordpress}->{site_id});
+    $sth->finish;
+}
+
+sub _update_sitemeta {
+    my ($dbh, $config, $uri) = @_;
+
+    my $table = $config->{database}->{table_prefix} . 'sitemeta';
+    my $sth = $dbh->prepare("UPDATE $table SET meta_value = ? WHERE site_id = ? AND meta_key = ?")
+        or die $dbh->errstr;
+
+    # WordPress multisite likes a trailing slash
+    $uri .= '/' unless $uri =~ /\/$/;
+
+    $sth->execute($uri, $config->{wordpress}->{site_id}, 'siteurl');
+    $sth->finish;
+}
+
+sub _update_blogs {
+    my ($dbh, $config, $uri, $base_path) = @_;
+
+    my $table = $config->{database}->{table_prefix} . 'blogs';
+    my $select_sth = $dbh->prepare("SELECT * FROM $table WHERE site_id = ?")
+        or die $dbh->errstr;
+    $select_sth->execute($config->{wordpress}->{site_id});
+
+    my $update_sth = $dbh->prepare("UPDATE $table SET domain = ?, path = ? WHERE blog_id = ? AND site_id = ?")
+        or die $dbh->errstr;
+
+    while (my $row = $select_sth->fetchrow_hashref) {
+        my $path = $row->{path};
+        $path =~ s/^\Q$base_path\E/$config->{base}/;
+
+        $update_sth->execute($uri->host, $path, $row->{blog_id}, $row->{site_id});
+
+        # The default blog uses wp_options, so no need to update a separate table
+        if ($row->{blog_id} != $config->{wordpress}->{blog_id}) {
+            my $blog_uri = URI->new($path)->abs($uri);
+            _update_blog_options($dbh, $config, $blog_uri, $row->{blog_id});
+        }
+    }
+
+    $update_sth->finish;
+    $select_sth->finish;
+}
+
+sub _update_blog_options {
+    my ($dbh, $config, $uri, $blog_id) = @_;
+
+    my $table = $config->{database}->{table_prefix} . $blog_id . '_options';
+    _update_options($dbh, $config, $table, $uri);
 }
 
 sub run_mysql_command {
