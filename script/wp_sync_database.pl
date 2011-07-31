@@ -22,9 +22,8 @@ use WordPress::Maintenance::RsyncTarget;
 ##
 
 my %DEFAULT_WORDPRESS_OPTIONS = (
-    siteurl                        => '__URI__',
-    home                           => '__URI__',
-    http_authentication_logout_uri => '__URI__/Shibboleth.sso/Logout?return=__URI__/',
+    siteurl => '__URI__',
+    home    => '__URI__',
 );
 
 
