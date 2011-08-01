@@ -166,7 +166,7 @@ sub update_options {
 
     # Update WordPress multisite paths if necessary
     if ($config->{wordpress}->{multisite}) {
-        # Load the "from" domain and path to calculate for "to" location
+        # Load the "from" domain and path to calculate "to" location
         my $site = _get_site($dbh, $config);
 
         _update_site($dbh, $config, $uri);
@@ -286,22 +286,14 @@ sub run_mysql_command {
     push @args, @$args if ref $args and ref $args eq 'ARRAY';
     push @args, $config->{database}->{name};
 
-    # XXX: Special case for mysql.osg.ufl.edu, to which the MySQL client on nersp cannot connect
-    my $force_local_command = 0;
-    if ($config->{database}->{host} and $config->{database}->{host} eq 'mysql.osg.ufl.edu') {
-        $force_local_command = 1;
-    }
-
-    return run_command($command, $config, \@args, $input, $force_local_command);
+    return run_local_command($command, \@args, $input);
 }
 
 sub run_command {
-    my ($command, $config, $args, $input, $force_local_command) = @_;
-
-    my $database_host = $config->{database}->{host};
+    my ($command, $config, $args, $input) = @_;
 
     my $output;
-    if (my $host = $config->{host} and my $user = $config->{user} and not $force_local_command) {
+    if (my $host = $config->{host} and my $user = $config->{user}) {
         $output = run_remote_comamnd($user, $host, $command, $args, $input);
     }
     else {

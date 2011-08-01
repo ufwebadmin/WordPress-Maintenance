@@ -5,6 +5,7 @@ This file documents the revision history for WordPress::Maintenance.
         - Update wp_sync_database.pl to set options via DBI
         - Update wp_sync_database.pl to set appropriate multisite
           locations
+        - Run all MySQL commands in wp_sync_database.pl locally
 
 0.22  Mon Jul  4 17:48:36 EDT 2011
         - Update authentication configuration to be more flexible
