@@ -85,6 +85,13 @@ define('WP_DEBUG', [% wordpress.debug ? 'true' : 'false' %]);
  */
 define('WP_CACHE', true);
 
+[% IF wordpress.force_ssl -%]
+/**
+ * Force SSL for administration
+ */
+define('FORCE_SSL_ADMIN', true);
+[% END -%]
+
 [% IF wordpress.multisite -%]
 /**
  * WordPress network settings

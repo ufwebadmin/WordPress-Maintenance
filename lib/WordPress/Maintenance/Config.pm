@@ -19,10 +19,11 @@ our $DEFAULT_CONFIG = {
     wordpress => {
         site_id => 1,
         blog_id => 1,
+        force_ssl => 0,
         wp_cache => {
-            use_flock        => 0,
+            use_flock => 0,
             acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
-            rejected_uris    => [ 'wp-' ],
+            rejected_uris => [ 'wp-' ],
         },
     },
     auth => {
@@ -72,6 +73,7 @@ a file named C<config.yml>.  For example:
       exclude_robots: 1
       wordpress:
         multisite: 0
+        force_ssl: 0
         wp_cache:
           enabled: 0
         options:
@@ -92,6 +94,7 @@ a file named C<config.yml>.  For example:
       exclude_robots: 1
       wordpress:
         multisite: 0
+        force_ssl: 0
         wp_cache:
           enabled: 0
         options:
@@ -113,6 +116,7 @@ a file named C<config.yml>.  For example:
       exclude_robots: 0
       wordpress:
         multisite: 0
+        force_ssl: 1
         wp_cache:
           enabled: 0
         options:
