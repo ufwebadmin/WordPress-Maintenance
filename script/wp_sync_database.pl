@@ -6,10 +6,8 @@ use Carp;
 use File::Path ();
 use File::Spec;
 use Getopt::Long;
-use IO::Select;
-use IPC::Open3;
+use IPC::Run ();
 use Net::SSH qw(ssh_cmd);
-use POSIX qw(:sys_wait_h);
 use URI;
 use WordPress::Maintenance;
 use WordPress::Maintenance::Config;
@@ -322,44 +320,12 @@ sub run_local_command {
 
     $args ||= [];
 
-    my $in  = IO::File->new;
-    my $out = IO::File->new;
-    my $err = IO::File->new;
+    my $output;
+    my $error;
 
-    my $pid = open3($in, $out, $err, $command, @$args);
-    print $in $input if defined $input;
-    close $in;
-
-    my $select = IO::Select->new;
-    $select->add($_) for $out, $err;
-
-    my $output = '';
-    my $error  = '';
-    while ($select->count) {
-        my @handles = $select->can_read;
-        foreach my $handle (@handles) {
-            my $buffer = '';
-            my $bytes = sysread($handle, $buffer, 4096);
-
-            unless (defined($bytes)) {
-                waitpid $pid, WNOHANG;
-                die $!;
-            }
-
-            $select->remove($handle) unless $bytes;
-            if ($handle eq $out) {
-                $output .= $buffer;
-            }
-            elsif ($handle eq $err) {
-                $error .= $buffer;
-            }
-        }
-    }
-
-    waitpid $pid, 0;
-    if ($error) {
-        croak $error;
-    }
+    # XXX: Have seen Perl die with no message when e.g. the MySQL login is incorrect
+    IPC::Run::run([ $command, @$args ], \$input, \$output, \$error)
+        or croak "Error running [$command]: $?";
 
     return $output;
 }
