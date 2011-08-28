@@ -7,6 +7,7 @@ This file documents the revision history for WordPress::Maintenance.
           locations
         - Run all MySQL commands in wp_sync_database.pl locally
         - Convert from IPC::Open3 to IPC::Run for simplicity
+        - Add additional feedback as scripts are running
 
 0.22  Mon Jul  4 17:48:36 EDT 2011
         - Update authentication configuration to be more flexible

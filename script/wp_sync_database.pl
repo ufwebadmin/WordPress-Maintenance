@@ -80,10 +80,15 @@ sub sync_database {
         $dump = "SET NAMES $from_config->{database}->{dump_encoding};\n\n$dump";
     }
 
+    print "Synchronizing uploads...\n";
     sync_uploads($from_config, $to_config) unless $skip_uploads;
+
+    print "Loading database...\n";
     load_database($to_config, $dump);
 
     # Need direct connection for multisite setups
+    print "Updating options...\n";
+
     my $to_dbh = $config->dbh($to);
     update_options($to_dbh, $to_config);
     $to_dbh->disconnect;

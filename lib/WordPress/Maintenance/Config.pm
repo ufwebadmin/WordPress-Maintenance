@@ -304,7 +304,7 @@ sub dbh {
         $database_config->{user},
         $database_config->{password},
         { RaiseError => 1 },
-    );
+    ) or croak "Error connecting to database: " . $DBI::errstr;
 
     return $dbh;
 }

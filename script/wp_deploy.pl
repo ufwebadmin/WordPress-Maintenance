@@ -59,7 +59,11 @@ sub main {
     my $config = WordPress::Maintenance::Config->new($source_directory);
 
     my $stage_directory = tempdir(CLEANUP => $cleanup);
+
+    print "Staging WordPress...\n";
     stage($www_directory, $config, $environment, $template_directory, $stage_directory, $checkout);
+
+    print "Deploying from stage...\n";
     deploy($stage_directory, $config, $environment);
 
     print "Done.\n";
