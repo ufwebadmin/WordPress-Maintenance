@@ -222,6 +222,8 @@ sub _load_users {
         s/\n$//;
     }
 
+    @users = grep { $_ !~ /^\s*$/ && $_ !~ /^#/ } @users;
+
     return \@users;
 }
 

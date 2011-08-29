@@ -1,5 +1,8 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.25
+        - Make user access parsing a little more robust
+
 0.24  Mon Aug 29 17:18:41 EDT 2011
         - Extend multisite configuration to allow subdomain installs
 

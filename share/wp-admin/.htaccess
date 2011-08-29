@@ -9,6 +9,6 @@ ShibRequestSetting requireSession 1
 Require user ~ ^([% users.join('|') %])@ufl\.edu$
   [%- ELSE %]
 Require valid-user
-  [% END %]
+  [%- END %]
 [% END -%]
 [% END -%]
