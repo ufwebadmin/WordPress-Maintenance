@@ -92,18 +92,18 @@ define('WP_CACHE', true);
 define('FORCE_SSL_ADMIN', true);
 [% END -%]
 
-[% IF wordpress.multisite -%]
+[% IF wordpress.multisite AND wordpress.multisite.enabled -%]
 /**
  * WordPress network settings
  */
 define('WP_ALLOW_MULTISITE', true);
 define('MULTISITE', true);
-define('SUBDOMAIN_INSTALL', false);
+define('SUBDOMAIN_INSTALL', [% wordpress.multisite.subdomain ? 'true' : 'false' %]);
 $base = '[% base %]';
 define('DOMAIN_CURRENT_SITE', '[% uri.host %]');
 define('PATH_CURRENT_SITE', '[% base %]');
-define('SITE_ID_CURRENT_SITE', [% wordpress.site_id %]);
-define('BLOG_ID_CURRENT_SITE', [% wordpress.blog_id %]);
+define('SITE_ID_CURRENT_SITE', [% wordpress.multisite.site_id %]);
+define('BLOG_ID_CURRENT_SITE', [% wordpress.multisite.blog_id %]);
 [% END -%]
 
 /* That's all, stop editing! Happy blogging. */

@@ -8,6 +8,7 @@ dev:
   base:           /test/
   exclude_robots: 1
   wordpress:
+    force_ssl: 0
     wp_cache:
       enabled: 0
     options:
@@ -32,6 +33,7 @@ test:
   shebang:        #!/usr/local/bin/php
   exclude_robots: 1
   wordpress:
+    force_ssl: 1
     wp_cache:
       enabled: 1
     options:
@@ -57,6 +59,7 @@ prod:
   shebang:        #!/usr/local/bin/php
   exclude_robots: 0
   wordpress:
+    force_ssl: 1
     wp_cache:
       enabled: 1
     options:

@@ -44,7 +44,7 @@ WordPress:
 http://codex.wordpress.org/Create_A_Network
 
 For the WordPress-Maintenance scripts, make sure you've set the
-"multisite" flag in your config.yml.
+"multisite" options in your config.yml.
 
 Then, when you initially deploy to an environment, manually disable
 the following WordPress network settings in your wp-config.php file:

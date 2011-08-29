@@ -17,9 +17,13 @@ our $DEFAULT_CONFIG_FILENAME = 'config.yml';
 our $DEFAULT_CONFIG = {
     allow_comments => 0,
     wordpress => {
-        site_id => 1,
-        blog_id => 1,
         force_ssl => 0,
+        multisite => {
+            enabled => 0,
+            subdomain => 0,
+            site_id => 1,
+            blog_id => 1,
+        },
         wp_cache => {
             use_flock => 0,
             acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
@@ -28,7 +32,7 @@ our $DEFAULT_CONFIG = {
     },
     auth => {
         shibboleth => 1,
-        require    => 1,
+        require => 1,
     },
     database => {
         dump_encoding => 'utf8',
@@ -72,8 +76,10 @@ a file named C<config.yml>.  For example:
       base:           /news/
       exclude_robots: 1
       wordpress:
-        multisite: 0
         force_ssl: 0
+        multisite:
+          enabled: 1
+          subdomain: 1
         wp_cache:
           enabled: 0
         options:
@@ -93,8 +99,10 @@ a file named C<config.yml>.  For example:
       base:           /
       exclude_robots: 1
       wordpress:
-        multisite: 0
         force_ssl: 0
+        multisite:
+          enabled: 1
+          subdomain: 1
         wp_cache:
           enabled: 0
         options:
@@ -115,8 +123,10 @@ a file named C<config.yml>.  For example:
       base:           /
       exclude_robots: 0
       wordpress:
-        multisite: 0
         force_ssl: 1
+        multisite:
+          enabled: 1
+          subdomain: 1
         wp_cache:
           enabled: 0
         options:
