@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.24
+0.24  Mon Aug 29 17:18:41 EDT 2011
         - Extend multisite configuration to allow subdomain installs
 
 0.23  Sun Aug 28 15:35:25 EDT 2011
