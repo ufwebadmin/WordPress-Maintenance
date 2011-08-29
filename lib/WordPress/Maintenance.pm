@@ -3,7 +3,7 @@ package WordPress::Maintenance;
 use strict;
 use warnings;
 
-our $VERSION = '0.25';
+our $VERSION = '0.26_01';
 
 our @DEFAULT_RSYNC_ARGS = qw(
     --archive

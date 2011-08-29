@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.26
+        - Fix wp_sync_database.pl for new multisite configuration
+          option structure
+
 0.25  Mon Aug 29 17:55:14 EDT 2011
         - Make user access parsing a little more robust
 

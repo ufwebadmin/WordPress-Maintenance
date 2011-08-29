@@ -211,7 +211,7 @@ sub _get_site {
     my $sth = $dbh->prepare("SELECT * FROM $table WHERE id = ?")
         or die $dbh->errstr;
 
-    $sth->execute($config->{wordpress}->{site_id});
+    $sth->execute($config->{wordpress}->{multisite}->{site_id});
     my $site = $sth->fetchrow_hashref;
     $sth->finish;
 
@@ -225,7 +225,7 @@ sub _update_site {
     my $sth = $dbh->prepare("UPDATE $table SET domain = ?, path = ? WHERE id = ?")
         or die $dbh->errstr;
 
-    $sth->execute($uri->host, $config->{base}, $config->{wordpress}->{site_id});
+    $sth->execute($uri->host, $config->{base}, $config->{wordpress}->{multisite}->{site_id});
     $sth->finish;
 }
 
@@ -239,7 +239,7 @@ sub _update_sitemeta {
     # WordPress multisite likes a trailing slash
     $uri .= '/' unless $uri =~ /\/$/;
 
-    $sth->execute($uri, $config->{wordpress}->{site_id}, 'siteurl');
+    $sth->execute($uri, $config->{wordpress}->{multisite}->{site_id}, 'siteurl');
     $sth->finish;
 }
 
@@ -249,7 +249,7 @@ sub _update_blogs {
     my $table = $config->{database}->{table_prefix} . 'blogs';
     my $select_sth = $dbh->prepare("SELECT * FROM $table WHERE site_id = ?")
         or die $dbh->errstr;
-    $select_sth->execute($config->{wordpress}->{site_id});
+    $select_sth->execute($config->{wordpress}->{multisite}->{site_id});
 
     my $update_sth = $dbh->prepare("UPDATE $table SET domain = ?, path = ? WHERE blog_id = ? AND site_id = ?")
         or die $dbh->errstr;
@@ -261,7 +261,7 @@ sub _update_blogs {
         $update_sth->execute($uri->host, $path, $row->{blog_id}, $row->{site_id});
 
         # The default blog uses wp_options, so no need to update a separate table
-        if ($row->{blog_id} != $config->{wordpress}->{blog_id}) {
+        if ($row->{blog_id} != $config->{wordpress}->{multisite}->{blog_id}) {
             my $blog_uri = URI->new($path)->abs($uri);
             _update_blog_options($dbh, $config, $blog_uri, $row->{blog_id});
         }
