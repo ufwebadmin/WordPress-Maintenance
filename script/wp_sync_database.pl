@@ -107,7 +107,7 @@ sub sync_uploads {
 
     _sync_uploads($from_config, $to_config, $WordPress::Maintenance::Directories::UPLOADS);
 
-    if ($from_config->{wordpress}->{multisite}) {
+    if ($from_config->{wordpress}->{multisite}->{enabled}) {
         _sync_uploads($from_config, $to_config, $WordPress::Maintenance::Directories::UPLOAD_BLOGS);
     }
 }
@@ -168,7 +168,7 @@ sub update_options {
     _update_options($dbh, $config, $table, $uri);
 
     # Update WordPress multisite paths if necessary
-    if ($config->{wordpress}->{multisite}) {
+    if ($config->{wordpress}->{multisite}->{enabled}) {
         # Load the "from" domain and path to calculate "to" location
         my $site = _get_site($dbh, $config);
 
