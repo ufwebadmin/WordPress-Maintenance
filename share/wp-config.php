@@ -81,7 +81,7 @@ define('WPLANG', '[% wordpress.language %]');
 define('WP_DEBUG', [% wordpress.debug ? 'true' : 'false' %]);
 
 /**
- * Enable the WordPress cache system, so that wp-cache can run
+ * Enable the WordPress cache system to allow for installation of caching plugins
  */
 define('WP_CACHE', true);
 

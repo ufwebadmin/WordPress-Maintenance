@@ -1,5 +1,9 @@
 This file documents the revision history for WordPress::Maintenance.
 
+0.28
+        - Remove specific support for wp-cache; install your own
+          caching setup if necessary
+
 0.27  Tue Sep 27 17:36:44 EDT 2011
         - Fix bad assumption about default multisite values in
           wp_sync_database.pl

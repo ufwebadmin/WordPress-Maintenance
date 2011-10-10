@@ -110,16 +110,6 @@ sub stage {
         mkdir $directory;
     }
 
-    # Add wp-cache symbolic link
-    my $wp_content_directory = File::Spec->join($stage_directory, $WordPress::Maintenance::Directories::CONTENT);
-
-    my $cwd = Cwd::getcwd();
-    chdir $wp_content_directory;
-    symlink
-        File::Spec->join('plugins', 'wp-cache', 'wp-cache-phase1.php'),
-        'advanced-cache.php';
-    chdir $cwd;
-
     # Add robots.txt if requested
     if ($environment_config->{exclude_robots}) {
         open my $fh, '>', File::Spec->join($stage_directory, 'robots.txt') or die $!;

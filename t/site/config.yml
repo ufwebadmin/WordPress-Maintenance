@@ -9,10 +9,7 @@ dev:
   exclude_robots: 1
   wordpress:
     force_ssl: 0
-    wp_cache:
-      enabled: 0
     options:
-      fake_cache_ttl: 300
   auth:
     shibboleth: 0
     require:    0
@@ -34,10 +31,7 @@ test:
   exclude_robots: 1
   wordpress:
     force_ssl: 1
-    wp_cache:
-      enabled: 1
     options:
-      fake_cache_ttl: 3600
   auth:
     shibboleth: 1
     require:    1
@@ -60,10 +54,7 @@ prod:
   exclude_robots: 0
   wordpress:
     force_ssl: 1
-    wp_cache:
-      enabled: 1
     options:
-      fake_cache_ttl: 3600
   database:
     host:          mysql01.osg.ufl.edu
     port:          3306

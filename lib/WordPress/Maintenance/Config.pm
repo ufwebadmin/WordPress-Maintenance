@@ -24,11 +24,6 @@ our $DEFAULT_CONFIG = {
             site_id => 1,
             blog_id => 1,
         },
-        wp_cache => {
-            use_flock => 0,
-            acceptable_files => [ 'wp-atom.php', 'wp-comments-popup.php', 'wp-commentsrss2.php', 'wp-links-opml.php', 'wp-locations.php', 'wp-rdf.php', 'wp-rss.php', 'wp-rss2.php' ],
-            rejected_uris => [ 'wp-' ],
-        },
     },
     auth => {
         shibboleth => 1,
@@ -80,8 +75,6 @@ a file named C<config.yml>.  For example:
         multisite:
           enabled: 1
           subdomain: 1
-        wp_cache:
-          enabled: 0
         options:
       auth:
         shibboleth: 1
@@ -103,8 +96,6 @@ a file named C<config.yml>.  For example:
         multisite:
           enabled: 1
           subdomain: 1
-        wp_cache:
-          enabled: 0
         options:
       auth:
         shibboleth: 1
@@ -127,8 +118,6 @@ a file named C<config.yml>.  For example:
         multisite:
           enabled: 1
           subdomain: 1
-        wp_cache:
-          enabled: 0
         options:
       auth:
         shibboleth: 1
