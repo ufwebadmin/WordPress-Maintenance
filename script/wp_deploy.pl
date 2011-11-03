@@ -52,16 +52,12 @@ sub main {
     die "Directory ($template_directory) does not exist"
         unless -d $template_directory;
 
-    my $www_directory = File::Spec->join($source_directory, 'www');
-    die "Source ($source_directory) does not appear to be WordPress site checkout\n"
-        unless -d $www_directory and -d File::Spec->join($www_directory, $WordPress::Maintenance::Directories::CONTENT);
-
     my $config = WordPress::Maintenance::Config->new($source_directory);
 
     my $stage_directory = tempdir(CLEANUP => $cleanup);
 
     print "Staging WordPress...\n";
-    stage($www_directory, $config, $environment, $template_directory, $stage_directory, $checkout);
+    stage($config, $environment, $template_directory, $stage_directory, $checkout);
 
     print "Deploying from stage...\n";
     deploy($stage_directory, $config, $environment);
@@ -91,9 +87,11 @@ END_OF_USAGE
 }
 
 sub stage {
-    my ($www_directory, $config, $environment, $template_directory, $stage_directory, $checkout) = @_;
+    my ($config, $environment, $template_directory, $stage_directory, $checkout) = @_;
 
     my $environment_config = $config->for_environment($environment);
+
+    my $www_directory = $config->subdirectory('www');
 
     stage_wordpress($www_directory, $stage_directory, $checkout);
     stage_configuration($config, $environment, $template_directory, $stage_directory);
@@ -147,14 +145,19 @@ sub stage_configuration {
         %{ $config->for_environment($environment) },
     };
 
-    File::Find::find(sub {
-        return if -d $File::Find::name;
-        return if $File::Find::dir =~ /\B\.svn\b/;
+    # Support a config-local set of templates to override defaults
+    my $overlay_directory = $config->subdirectory('overlay');
 
-        my $relative = File::Spec->abs2rel($File::Find::name, $template_directory);
-        my $final = File::Spec->join($stage_directory, $relative);
-        $tt->process($File::Find::name, $stash, $final) or croak $tt->error . "\n";
-    }, $template_directory);
+    foreach my $directory ($template_directory, $overlay_directory) {
+        File::Find::find(sub {
+            return if -d $File::Find::name;
+            return if $File::Find::dir =~ /\B\.svn\b/;
+
+            my $relative = File::Spec->abs2rel($File::Find::name, $directory);
+            my $final = File::Spec->join($stage_directory, $relative);
+            $tt->process($File::Find::name, $stash, $final) or croak $tt->error . "\n";
+        }, $directory);
+    }
 }
 
 sub add_shebang {

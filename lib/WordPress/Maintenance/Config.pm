@@ -11,6 +11,7 @@ use File::Spec;
 use Hash::Merge ();
 use Time::HiRes ();
 use URI;
+use WordPress::Maintenance;
 use YAML ();
 
 our $DEFAULT_CONFIG_FILENAME = 'config.yml';
@@ -38,7 +39,7 @@ our $DEFAULT_MERGE = 1;
 our $DEFAULT_USERS_FILENAME = 'users.txt';
 our $DEFAULT_AUTH_FILENAME  = 'auth.yml';
 
-__PACKAGE__->mk_accessors(qw/config users keys salts/);
+__PACKAGE__->mk_accessors(qw/directory config users keys salts/);
 
 =head1 NAME
 
@@ -154,15 +155,21 @@ sub new {
     $users_filename  ||= $DEFAULT_USERS_FILENAME;
     $auth_filename   ||= $DEFAULT_AUTH_FILENAME;
 
+    # Basic sanity check
+    my $www_directory = File::Spec->join($directory, 'www');
+    croak "Source ($directory) does not appear to be WordPress site checkout\n"
+        unless -d $www_directory and -d File::Spec->join($www_directory, $WordPress::Maintenance::Directories::CONTENT);
+
     my $config = $class->_load_config($directory, $config_filename, $merge);
     my $users  = $class->_load_users($directory, $users_filename);
     my $auth   = $class->_load_auth($directory, $auth_filename);
 
     my $self = $class->SUPER::new({
-        config => $config,
-        users  => $users,
-        keys   => $auth->{keys},
-        salts  => $auth->{salts},
+        directory => $directory,
+        config    => $config,
+        users     => $users,
+        keys      => $auth->{keys},
+        salts     => $auth->{salts},
     });
 
     return $self;
@@ -312,6 +319,23 @@ sub dbh {
     ) or croak "Error connecting to database: " . $DBI::errstr;
 
     return $dbh;
+}
+
+=head2 subdirectory
+
+Return the path to a configuration-local subdirectory.
+
+    # Prints './www'
+    print $config->subdirectory('www');
+
+=cut
+
+sub subdirectory {
+    my ($self, $name) = @_;
+
+    my $path = File::Spec->join($self->directory, $name);
+
+    return File::Spec->rel2abs($path, $self->directory);
 }
 
 =head1 AUTHOR

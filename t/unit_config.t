@@ -4,10 +4,14 @@ use File::Spec;
 use FindBin;
 use WordPress::Maintenance::Config;
 
-use Test::More tests => 73;
+use Test::More tests => 75;
 
 my $config = WordPress::Maintenance::Config->new(File::Spec->join($FindBin::Dir, 'site'));
 isa_ok($config, 'WordPress::Maintenance::Config');
+
+my $directory = File::Spec->join($FindBin::Dir, 'site');
+is($config->directory, $directory);
+is($config->subdirectory('www'), File::Spec->join($directory, 'www'));
 
 my $dev = $config->for_environment('dev');
 is($dev->{server_group}, 'apache', 'matched dev server_group value');

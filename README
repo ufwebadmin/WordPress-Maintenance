@@ -20,12 +20,17 @@ Subversion repository containing the following:
 
 wordpress_site_name/
   config.yml
+  overlay/
   www/
     [...]
     wp-content/
       [...]
       plugins/
         http-authentication/
+
+The "overlay" directory can contain configuration templates that
+override those provided by this package. Use this, for example, to
+provide a custom .htaccess file.
 
 The "www" directory can be configured using svn:externals to
 automatically check out the required WordPress components.
