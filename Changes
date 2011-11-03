@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.29
+0.29  Thu Nov  3 18:09:45 EDT 2011
         - Add support for a configuration overlay directory
         - Do not create an empty wp-cache directory
 
