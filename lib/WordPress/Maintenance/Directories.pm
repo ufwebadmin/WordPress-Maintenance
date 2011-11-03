@@ -12,7 +12,6 @@ our $UPLOAD_BLOGS = 'blogs.dir';
 
 our @PLUGIN = qw(
     uf-url-cache
-    wp-cache
 );
 
 our @WRITABLE = (
