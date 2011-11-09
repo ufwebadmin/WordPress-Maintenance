@@ -149,6 +149,9 @@ sub stage_configuration {
     my $overlay_directory = $config->subdirectory('overlay');
 
     foreach my $directory ($template_directory, $overlay_directory) {
+        # Skip the overlay directory if it does not exist
+        next unless -d $directory;
+
         File::Find::find(sub {
             return if -d $File::Find::name;
             return if $File::Find::dir =~ /\B\.svn\b/;
