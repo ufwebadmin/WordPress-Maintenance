@@ -2,6 +2,7 @@ This file documents the revision history for WordPress::Maintenance.
 
 0.30
         - Avoid a warning when the overlay directory does not exist
+        - Fix multisite check for rewrite rules
 
 0.29  Thu Nov  3 18:09:45 EDT 2011
         - Add support for a configuration overlay directory

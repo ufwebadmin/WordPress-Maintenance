@@ -45,7 +45,7 @@ Require Shibboleth
 #
 
 # BEGIN WordPress
-[% IF wordpress.multisite -%]
+[% IF wordpress.multisite AND wordpress.multisite.enabled -%]
 RewriteEngine On
 RewriteBase [% base %]
 RewriteRule ^index\.php$ - [L]
