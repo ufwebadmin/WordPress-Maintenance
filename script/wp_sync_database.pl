@@ -141,11 +141,11 @@ sub _sync_remote_uploads {
     my ($from_target) = @_;
 
     my $path = $from_target->path;
-    $path =~ s/\//_/g;
+    $path =~ s|/|_|g;
+    $path .= '_' . $>;
 
     my $tmp_path = File::Spec->join(File::Spec->tmpdir, $path);
     File::Path::make_path($tmp_path);
-    chmod 0777, $tmp_path;
 
     my $tmp_target = WordPress::Maintenance::RsyncTarget->new({ path => $tmp_path });
     WordPress::Maintenance::copy($from_target, $tmp_target, [ @WordPress::Maintenance::DEFAULT_RSYNC_ARGS ]);
