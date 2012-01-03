@@ -4,6 +4,7 @@ This file documents the revision history for WordPress::Maintenance.
         - Update wp_export.pl to make base URL more sensible
         - Change temporary path for copying uploads to include UID,
           avoiding some permissions errors
+        - Add some error checking to WordPress::Maintenance::Mechanize
 
 0.30  Tue Nov 15 11:05:57 EST 2011
         - Avoid a warning when the overlay directory does not exist

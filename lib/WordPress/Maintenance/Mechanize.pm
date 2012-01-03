@@ -3,6 +3,8 @@ package WordPress::Maintenance::Mechanize;
 use strict;
 use warnings;
 use base qw/Class::Accessor::Fast/;
+use Carp qw/croak/;
+use HTML::TreeBuilder;
 use URI;
 use WWW::Mechanize;
 
@@ -63,6 +65,8 @@ sub site_url {
 Log in to the WordPress instance using the specified username and
 password, storing the resulting cookie.
 
+If there is an error logging in, an exception will be thrown.
+
 =cut
 
 sub login {
@@ -71,13 +75,22 @@ sub login {
     my $login_url = $self->site_url(qw/wp-login.php/);
     $self->mech->get($login_url);
 
-    $self->mech->submit_form(
+    my $response = $self->mech->submit_form(
         form_name => 'loginform',
         fields    => {
             log => $username,
             pwd => $password,
         },
     );
+
+    croak "Error submitting login form: " . $response->status_line
+        if $response->is_error;
+
+    my $tree = HTML::TreeBuilder->new_from_content($response->content);
+    my $error = $tree->look_down('id', 'login_error');
+    if ($error) {
+        croak "Error logging in: " . $error->as_text;
+    }
 }
 
 =head2 export_site
@@ -102,7 +115,15 @@ sub export_site {
         download                    => 'true',
     );
 
-    $self->mech->get($export_url, ':content_file' => $filename);
+    my $response = $self->mech->get($export_url);
+    if ($response->content_type eq 'text/xml') {
+        open my $fh, '>', $filename or croak "Error opening export file: $!";
+        print $fh $response->content;
+        close $fh;
+    }
+    else {
+        croak 'Did not get an XML response from WordPress when exporting';
+    }
 }
 
 =head1 AUTHOR
