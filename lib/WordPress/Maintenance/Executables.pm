@@ -18,17 +18,22 @@ our @ROOT = qw(
 
 our @INCLUDES = (
     File::Spec->join(qw/js tinymce tiny_mce_gzip.php/),
+    File::Spec->join(qw/js tinymce wp-mce-help.php/),
+    File::Spec->join(qw/js tinymce wp-tinymce.php/),
 );
 
 our @ADMIN = qw(
+    admin-ajax.php
     bookmarklet.php
-    categories.php
     cat-js.php
+    categories.php
     edit-comments.php
     edit-form-ajax-cat.php
     edit-pages.php
+    edit-tags.php
     edit.php
     execute-pings.php
+    export.php
     import.php
     index.php
     inline-uploading.php
@@ -39,29 +44,44 @@ our @ADMIN = qw(
     link-import.php
     link-manager.php
     list-manipulation.php
+    load-scripts.php
+    load-styles.php
+    media-new.php
+    media-upload.php
+    media.php
     moderation.php
+    nav-menus.php
     options-discussion.php
     options-general.php
+    options-media.php
     options-misc.php
     options-permalink.php
-    options.php
+    options-privacy.php
     options-reading.php
     options-writing.php
+    options.php
     page-new.php
     plugin-editor.php
+    plugin-install.php
     plugins.php
+    post-new.php
     post.php
-    profile.php
     profile-update.php
+    profile.php
     setup-config.php
     sidebar.php
     templates.php
     theme-editor.php
     themes.php
+    tools.php
+    update-core.php
     update-links.php
     upgrade.php
+    upload.php
     user-edit.php
+    user-new.php
     users.php
+    widgets.php
 );
 
 our @ALL = (
