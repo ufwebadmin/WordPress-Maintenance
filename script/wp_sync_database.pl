@@ -75,7 +75,9 @@ sub sync_database {
     my $from_config = $config->for_environment($from);
     my $to_config   = $config->for_environment($to);
 
-    my $dump = dump_database($from_config);
+    my $from_dbh = $config->dbh($from);
+
+    my $dump = dump_database($from_dbh, $from_config);
     if ($from_config->{database}->{dump_encoding} ne $to_config->{database}->{dump_encoding}) {
         $dump = "SET NAMES $from_config->{database}->{dump_encoding};\n\n$dump";
     }
@@ -95,11 +97,37 @@ sub sync_database {
 }
 
 sub dump_database {
-    my ($config) = @_;
+    my ($dbh, $config) = @_;
 
-    my $output = run_mysql_command('mysqldump', $config, [ '--add-drop-table', '--extended-insert' ]);
+    my @tables = _list_tables($dbh, $config);
+    my @args = (
+        '--add-drop-table',
+        '--extended-insert',
+        '--tables',
+        @tables,
+    );
+
+    my $output = run_mysql_command('mysqldump', $config, [ @args ]);
 
     return $output;
+}
+
+sub _list_tables {
+    my ($dbh, $config) = @_;
+
+    my $sth = $dbh->prepare("SHOW TABLES LIKE ?")
+        or die $dbh->errstr;
+
+    $sth->execute($config->{database}->{table_prefix} . '%');
+    my $tables = $sth->fetchall_arrayref;
+    $sth->finish;
+
+    my @tables;
+    foreach my $table (@$tables) {
+        push @tables, $table->[0];
+    }
+
+    return @tables;
 }
 
 sub sync_uploads {
@@ -286,8 +314,9 @@ sub run_mysql_command {
         push @args, "--${option}=" . $config->{database}->{$option}
             if $config->{database}->{$option};
     }
-    push @args, @$args if ref $args and ref $args eq 'ARRAY';
+
     push @args, $config->{database}->{name};
+    push @args, @$args if ref $args and ref $args eq 'ARRAY';
 
     return run_local_command($command, \@args, $input);
 }

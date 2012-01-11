@@ -5,6 +5,8 @@ This file documents the revision history for WordPress::Maintenance.
         - Change temporary path for copying uploads to include UID,
           avoiding some permissions errors
         - Add some error checking to WordPress::Maintenance::Mechanize
+        - Restrict wp_sync_database.pl to dumping and loading tables
+          matching the target's database prefix
 
 0.30  Tue Nov 15 11:05:57 EST 2011
         - Avoid a warning when the overlay directory does not exist
