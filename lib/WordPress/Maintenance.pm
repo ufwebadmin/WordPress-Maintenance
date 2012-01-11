@@ -24,6 +24,83 @@ A collection of scripts for maintaining WordPress instances in a
 high-availablity environment.  Via a configuration file, a WordPress
 instance can be deployed with a single command.
 
+=head1 INSTALLATION
+
+To install L<WordPress::Maintenance> and its related scripts, download
+the latest package from:
+
+https://github.com/ufwebadmin/WordPress-Maintenance/downloads
+
+Then unpack the file and run the installer:
+
+    cd WordPress-Maintenance
+    perl Makefile.PL
+    make test
+    make install
+
+=head1 GETTING STARTED
+
+All of the scripts work based on a local copy of the WordPress files
+and a configuration file. This allows you to your WordPress
+setup in a version control system, including references to the
+appropriate version of WordPress and any plugins. For example, you
+might have a Subversion repository containing the following:
+
+    wordpress_site_name/
+        config.yml
+        overlay/
+        www/
+            [...]
+            wp-content/
+                [...]
+                plugins/
+                    http-authentication/
+
+The C<overlay> directory can contain configuration templates that
+override those provided by this package. Use this, for example, to
+provide a custom C<.htaccess> file.
+
+The C<www> directory can be configured using C<svn:externals> to
+automatically check out the required WordPress components.
+
+For an example configuration file, see
+L<WordPress::Maintenance::Config>.
+
+=head1 COMMON TASKS
+
+Once you've set up your local copy of the WordPress site and the
+related configuration file, you're ready to start deploying and
+synchronizing it.
+
+=head2 DEPLOYING
+
+Assuming your C<config.yml> file is configured with C<dev>, C<test>,
+and C<prod> stages, deploying to these is simple:
+
+    wp_deploy.pl -e dev
+    wp_deploy.pl -e test
+    wp_deploy.pl -e prod
+
+For more information on the options that C<wp_deploy.pl> provides, run
+the following:
+
+    wp_deploy.pl --help
+
+=head2 SYNCHRONIZING DATABASES
+
+Eventually you'll need to copy real data from one stage to
+another. For example, you may need to load everything from C<prod> in
+to C<dev> so that you, the developer, can work with real data.  To do
+so:
+
+    wp_sync_database.pl -f prod -t dev
+    wp_sync_database.pl -f prod -t test
+
+For more information on the options that C<wp_sync_database.pl>
+provides, run the following:
+
+    wp_sync_database.pl --help
+
 =head1 METHODS
 
 =head2 copy
