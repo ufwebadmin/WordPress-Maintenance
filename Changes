@@ -1,6 +1,6 @@
 This file documents the revision history for WordPress::Maintenance.
 
-0.31
+0.31  Wed Jan 11 16:17:06 EST 2012
         - Update wp_export.pl to make base URL more sensible
         - Change temporary path for copying uploads to include UID,
           avoiding some permissions errors
