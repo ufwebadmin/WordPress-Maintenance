@@ -8,7 +8,7 @@ use HTML::TreeBuilder;
 use URI;
 use WWW::Mechanize;
 
-__PACKAGE__->mk_accessors(qw/url mech/);
+__PACKAGE__->mk_accessors(qw/url mech debug/);
 
 =head1 NAME
 
@@ -54,10 +54,14 @@ Generate a L<URI> for the specified WordPress path.
 sub site_url {
     my ($self, @path) = @_;
 
-    my $url = URI->new($self->url);
-    $url->path_segments($url->path_segments, @path);
+    # Remove trailing slashes
+    my $url = $self->url;
+    $url =~ s/\/+$//;
 
-    return $url;
+    my $uri = URI->new($url);
+    $uri->path_segments($uri->path_segments, @path);
+
+    return $uri;
 }
 
 =head2 login
@@ -73,6 +77,8 @@ sub login {
     my ($self, $username, $password) = @_;
 
     my $login_url = $self->site_url(qw/wp-login.php/);
+
+    warn "Logging in via [$login_url]\n" if $self->debug;
     $self->mech->get($login_url);
 
     my $response = $self->mech->submit_form(
@@ -115,7 +121,9 @@ sub export_site {
         download                    => 'true',
     );
 
+    warn "Exporting data via [$export_url]\n" if $self->debug;
     my $response = $self->mech->get($export_url);
+
     if ($response->content_type eq 'text/xml') {
         open my $fh, '>', $filename or croak "Error opening export file: $!";
         print $fh $response->content;

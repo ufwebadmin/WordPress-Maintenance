@@ -19,6 +19,7 @@ sub main {
     my $password;
     my $output_directory = File::Spec->curdir;
     my $output_filename;
+    my $debug = 0;
     my $help = 0;
     die usage() unless GetOptions(
         'base|b=s'     => \$base_url,
@@ -26,6 +27,7 @@ sub main {
         'password|p=s' => \$password,
         'output|o=s'   => \$output_directory,
         'filename|f=s' => \$output_filename,
+        'debug|d'      => \$debug,
         'help|h'       => \$help,
     );
     print usage() and exit() if $help;
@@ -37,7 +39,11 @@ sub main {
 
     my $url = URI->new($base_url);
 
-    my $mech = WordPress::Maintenance::Mechanize->new({ url => $url });
+    my $mech = WordPress::Maintenance::Mechanize->new({
+        url   => $url,
+        debug => $debug,
+    });
+
     $mech->login($username, $password);
 
     unless ($output_filename) {
